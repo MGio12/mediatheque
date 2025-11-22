@@ -1307,3 +1307,433 @@ textarea.form-control {
         min-width: 140px;
     }
 }
+
+/* =========================================
+   Modern Resource Detail Page Styles
+   ========================================= */
+
+/* Breadcrumb */
+.breadcrumb-nav {
+    margin: 20px 0 30px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border-radius: 50px;
+    box-shadow: var(--shadow-subtle);
+    border: 1px solid var(--border-light);
+}
+
+.back-link:hover {
+    color: var(--color-primary);
+    transform: translateX(-3px);
+}
+
+/* Header Card */
+.ressource-header-card {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: var(--shadow-medium);
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+}
+
+.ressource-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 60px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Image Section */
+.image-wrapper {
+    position: relative;
+    border-radius: 16px;
+    box-shadow: var(--shadow-heavy);
+}
+
+.image-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 2/3;
+    background: var(--bg-form-alt);
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.image-blur-bg {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(40px);
+    opacity: 0.4;
+    z-index: -1;
+    border-radius: 30px;
+}
+
+/* Info Section */
+.info-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-badges {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.ressource-title {
+    font-size: 3em;
+    line-height: 1.1;
+    margin-bottom: 15px;
+    background: linear-gradient(to right, var(--text-heading), var(--text-secondary));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+}
+
+.main-meta {
+    font-size: 1.2em;
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.meta-separator {
+    color: var(--text-tertiary);
+}
+
+/* Rating */
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 35px;
+    padding-bottom: 35px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.rating-details {
+    font-size: 1.1em;
+    color: var(--text-heading);
+}
+
+.rating-count {
+    color: var(--text-tertiary);
+    font-size: 0.9em;
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+/* Details Grid */
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-label {
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    font-weight: 600;
+}
+
+.detail-value {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+/* Themes */
+.themes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.theme-tag {
+    background: var(--bg-form-alt);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.theme-tag:hover {
+    background: var(--color-primary);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* Resume Section */
+.resume-section {
+    max-width: 800px;
+    margin: 0 auto 60px;
+    padding: 0 20px;
+}
+
+.section-heading {
+    font-size: 1.8em;
+    color: var(--text-heading);
+    margin-bottom: 30px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.section-heading::after {
+    content: '';
+    flex-grow: 1;
+    height: 1px;
+    background: var(--border-light);
+}
+
+.resume-content {
+    font-size: 1.25em;
+    line-height: 1.8;
+    color: var(--text-primary);
+    font-weight: 300;
+}
+
+/* Evaluation Form */
+.evaluation-form-container {
+    max-width: 800px;
+    margin: 0 auto 60px;
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-light);
+}
+
+.modern-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.rating-input-wrapper {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.rating-input-wrapper label {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    color: var(--text-secondary);
+}
+
+.star-rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 10px;
+}
+
+.star-rating-input input {
+    display: none;
+}
+
+.star-rating-input label {
+    font-size: 2.5em;
+    color: var(--border-medium);
+    cursor: pointer;
+    transition: color 0.2s;
+    margin: 0;
+}
+
+.star-rating-input label:hover,
+.star-rating-input label:hover~label,
+.star-rating-input input:checked~label {
+    color: var(--color-warning);
+}
+
+/* Reviews Section */
+.reviews-section {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.count-badge {
+    background: var(--bg-form-alt);
+    color: var(--text-secondary);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.6em;
+    vertical-align: middle;
+}
+
+.reviews-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.review-card {
+    background: var(--bg-card);
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    transition: transform 0.2s;
+}
+
+.review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-subtle);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.reviewer-avatar {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.reviewer-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.reviewer-name {
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.review-date {
+    font-size: 0.85em;
+    color: var(--text-tertiary);
+}
+
+.review-content {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding-left: 60px;
+}
+
+.empty-reviews {
+    text-align: center;
+    padding: 60px;
+    background: var(--bg-form-alt);
+    border-radius: 16px;
+    color: var(--text-tertiary);
+}
+
+.empty-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.user-feedback-status {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 500;
+}
+
+.user-feedback-status.success {
+    background: var(--alert-success-bg);
+    color: var(--alert-success-text);
+    border: 1px solid var(--alert-success-border);
+}
+
+.user-feedback-status.info {
+    background: var(--alert-info-bg);
+    color: var(--alert-info-text);
+    border: 1px solid var(--alert-info-border);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .ressource-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .image-container {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .ressource-title {
+        font-size: 2.5em;
+        text-align: center;
+    }
+
+    .header-badges,
+    .main-meta,
+    .rating-display {
+        justify-content: center;
+    }
+
+    .info-container {
+        text-align: center;
+    }
+
+    .details-grid {
+        text-align: left;
+    }
+
+    .themes-container {
+        justify-content: center;
+    }
+}

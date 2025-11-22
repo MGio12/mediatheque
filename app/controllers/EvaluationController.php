@@ -1,7 +1,7 @@
 <?php
 /**
- * Contr�leur Evaluation
- * SAE R307 - M�diath�que
+ * Contrôleur Evaluation
+ * SAE R307 - Médiathèque
  */
 
 require_once __DIR__ . '/../models/Evaluation.php';
@@ -17,13 +17,13 @@ class EvaluationController extends Controller {
     }
 
     /**
-     * Afficher le formulaire d'�valuation
+     * Afficher le formulaire d'évaluation
      */
     public function create() {
-        // V�rifier authentification
+        // Vérifier authentification
         Auth::requireAuth();
 
-        // R�cup�rer l'ID de la ressource
+        // Récupérer l'ID de la ressource
         $idRessource = $_GET['id_ressource'] ?? null;
 
         // Validation ID ressource
@@ -33,7 +33,7 @@ class EvaluationController extends Controller {
             exit;
         }
 
-        // V�rifier que la ressource existe
+        // Vérifier que la ressource existe
         $ressource = $this->ressourceModel->findById($idRessource);
         if (!$ressource) {
             $_SESSION['error'] = "Ressource introuvable.";
@@ -41,10 +41,10 @@ class EvaluationController extends Controller {
             exit;
         }
 
-        // V�rifier que l'utilisateur n'a pas d�j� �valu�
+        // Vérifier que l'utilisateur n'a pas déjà évalué
         $idUser = $_SESSION['user']['id_utilisateur'];
         if ($this->evaluationModel->hasUserEvaluated($idUser, $idRessource)) {
-            $_SESSION['error'] = "Vous avez d�j� �valu� cette ressource.";
+            $_SESSION['error'] = "Vous avez déjà évalué cette ressource.";
             header("Location: index.php?controller=ressource&action=show&id=" . $idRessource);
             exit;
         }
@@ -56,20 +56,20 @@ class EvaluationController extends Controller {
     }
 
     /**
-     * Traiter la soumission du formulaire d'�valuation
+     * Traiter la soumission du formulaire d'évaluation
      */
     public function createPost() {
-        // PROTECTION : Bloquer les requ�tes GET
+        // PROTECTION : Bloquer les requêtes GET
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location: index.php?controller=catalogue&action=index");
             exit;
         }
 
-        // V�rifier authentification
+        // Vérifier authentification
         Auth::requireAuth();
 
         try {
-            // R�cup�rer les donn�es du formulaire
+            // Récupérer les données du formulaire
             $idRessource = $_POST['id_ressource'] ?? null;
             $note = $_POST['note'] ?? null;
             $critique = $_POST['critique'] ?? null;
@@ -83,7 +83,7 @@ class EvaluationController extends Controller {
 
             // Validation note
             if ($note === null || $note === '') {
-                $_SESSION['error'] = "Veuillez s�lectionner une note.";
+                $_SESSION['error'] = "Veuillez sélectionner une note.";
                 header("Location: index.php?controller=evaluation&action=create&id_ressource=" . $idRessource);
                 exit;
             }
@@ -91,18 +91,18 @@ class EvaluationController extends Controller {
             // Convertir la note en float
             $note = floatval($note);
 
-            // V�rifier que la note est dans la plage valide
+            // Vérifier que la note est dans la plage valide
             if ($note < 0.0 || $note > 5.0) {
-                $_SESSION['error'] = "La note doit �tre comprise entre 0 et 5.";
+                $_SESSION['error'] = "La note doit être comprise entre 0 et 5.";
                 header("Location: index.php?controller=evaluation&action=create&id_ressource=" . $idRessource);
                 exit;
             }
 
-            // Validation critique (optionnelle, max 1000 caract�res)
+            // Validation critique (optionnelle, max 1000 caractères)
             if ($critique !== null && $critique !== '') {
                 $critique = trim($critique);
                 if (strlen($critique) > 1000) {
-                    $_SESSION['error'] = "La critique ne peut pas d�passer 1000 caract�res.";
+                    $_SESSION['error'] = "La critique ne peut pas dépasser 1000 caractères.";
                     header("Location: index.php?controller=evaluation&action=create&id_ressource=" . $idRessource);
                     exit;
                 }
@@ -110,7 +110,7 @@ class EvaluationController extends Controller {
                 $critique = null;
             }
 
-            // V�rifier que la ressource existe
+            // Vérifier que la ressource existe
             $ressource = $this->ressourceModel->findById($idRessource);
             if (!$ressource) {
                 $_SESSION['error'] = "Ressource introuvable.";
@@ -118,30 +118,30 @@ class EvaluationController extends Controller {
                 exit;
             }
 
-            // Cr�er l'�valuation
+            // Créer l'évaluation
             $idUser = $_SESSION['user']['id_utilisateur'];
             $result = $this->evaluationModel->createEvaluation($idUser, $idRessource, $note, $critique);
 
             if ($result) {
-                $_SESSION['success'] = "Votre �valuation a �t� enregistr�e avec succ�s.";
+                $_SESSION['success'] = "Votre évaluation a été enregistrée avec succès.";
                 header("Location: index.php?controller=ressource&action=show&id=" . $idRessource);
                 exit;
             } else {
-                $_SESSION['error'] = "Une erreur est survenue lors de l'enregistrement de votre �valuation.";
+                $_SESSION['error'] = "Une erreur est survenue lors de l'enregistrement de votre évaluation.";
                 header("Location: index.php?controller=evaluation&action=create&id_ressource=" . $idRessource);
                 exit;
             }
 
         } catch (PDOException $e) {
-            // G�rer l'erreur de contrainte UNIQUE
-            error_log("Erreur createPost �valuation: " . $e->getMessage());
-            $_SESSION['error'] = "Vous avez d�j� �valu� cette ressource.";
+            // Gérer l'erreur de contrainte UNIQUE
+            error_log("Erreur createPost évaluation: " . $e->getMessage());
+            $_SESSION['error'] = "Vous avez déjà évalué cette ressource.";
             header("Location: index.php?controller=ressource&action=show&id=" . $idRessource);
             exit;
 
         } catch (Exception $e) {
-            error_log("Erreur createPost �valuation: " . $e->getMessage());
-            $_SESSION['error'] = "Une erreur est survenue lors de l'enregistrement de votre �valuation.";
+            error_log("Erreur createPost évaluation: " . $e->getMessage());
+            $_SESSION['error'] = "Une erreur est survenue lors de l'enregistrement de votre évaluation.";
             header("Location: index.php?controller=evaluation&action=create&id_ressource=" . $idRessource);
             exit;
         }
