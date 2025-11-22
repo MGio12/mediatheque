@@ -26,11 +26,11 @@ TRUNCATE TABLE utilisateur;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. Utilisateurs
--- Mot de passe pour tous : "password" ($2y$10$...)
+-- Mot de passe pour tous : "password123" ($2y$12$...)
 INSERT INTO utilisateur (id_utilisateur, nom, prenom, email, mot_de_passe, role) VALUES
-(1, 'Admin', 'System', 'admin@mediatheque.com', '$2y$10$3.q/k.u.v.w.x.y.z.A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q', 'administrateur'),
-(2, 'Biblio', 'Thecaire', 'biblio@mediatheque.com', '$2y$10$3.q/k.u.v.w.x.y.z.A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q', 'bibliothecaire'),
-(3, 'Doe', 'John', 'user@mediatheque.com', '$2y$10$3.q/k.u.v.w.x.y.z.A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q', 'utilisateur');
+(1, 'Admin', 'System', 'admin@mediatheque.com', '$2y$12$xEP8ydYuuO8vBjyh3r9kduyiFE2f.32RhM49WOfu7U.fFYGBF59nq', 'administrateur'),
+(2, 'Biblio', 'Thecaire', 'biblio@mediatheque.com', '$2y$12$xEP8ydYuuO8vBjyh3r9kduyiFE2f.32RhM49WOfu7U.fFYGBF59nq', 'bibliothecaire'),
+(3, 'Doe', 'John', 'user@mediatheque.com', '$2y$12$xEP8ydYuuO8vBjyh3r9kduyiFE2f.32RhM49WOfu7U.fFYGBF59nq', 'utilisateur');
 
 -- 2. Thèmes
 INSERT INTO theme (id_theme, nom) VALUES

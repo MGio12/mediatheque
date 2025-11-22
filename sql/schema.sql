@@ -41,6 +41,7 @@ CREATE TABLE ressource (
     annee SMALLINT NOT NULL,  -- compatible pour 1800-2100
     resume TEXT,
     image_url VARCHAR(255),
+    pays VARCHAR(100),
     date_ajout DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_type (type),
     INDEX idx_titre (titre),
@@ -56,6 +57,7 @@ CREATE TABLE livre (
     isbn VARCHAR(13) NOT NULL UNIQUE,
     editeur VARCHAR(255) NOT NULL,
     nombre_pages INT NOT NULL,
+    prix DECIMAL(10,2),
     CONSTRAINT fk_livre_ressource FOREIGN KEY (id_ressource)
         REFERENCES ressource(id_ressource)
         ON DELETE CASCADE,
