@@ -98,14 +98,21 @@ php seed.php
 
 5. Configurer les paramètres de connexion
 
-Modifier `config/config.php` :
-```php
-define('DB_HOST', '127.0.0.1');
-define('DB_PORT', '3306');
-define('DB_NAME', 'gm401942_elibrary2');
-define('DB_USER', 'votre_utilisateur');
-define('DB_PASS', 'votre_mot_de_passe');
-```
+Le fichier `config/config.php` détecte automatiquement l'environnement :
+
+**Développement local (MAMP)** :
+- Host : `localhost`
+- Port : `8889`
+- Base : `gm401942_elibrary2`
+- User : `gm401942`
+- Password : `gm401942`
+
+**Production (serveur IUT)** :
+- Host : `localhost`
+- Port : `3306`
+- Base : `gm401942_elibrary2`
+- User : `gm401942`
+- Password : à configurer dans `config/config.php`
 
 6. Démarrer le serveur
 
@@ -122,13 +129,15 @@ Ouvrir : `http://localhost:8000`
 
 ## Comptes de test
 
-Après importation des données de test :
+Après importation du fichier `sql/data.sql` :
 
 | Rôle            | Email                    | Mot de passe |
 |-----------------|--------------------------|--------------|
 | Administrateur  | admin@mediatheque.com    | password     |
 | Bibliothécaire  | biblio@mediatheque.com   | password     |
 | Utilisateur     | user@mediatheque.com     | password     |
+
+Note : Les mots de passe sont hachés avec bcrypt dans la base de données.
 
 ## Documentation
 
