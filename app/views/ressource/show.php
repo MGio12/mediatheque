@@ -17,7 +17,7 @@
                     <?= htmlspecialchars($ressource['type'] === 'livre' ? 'Livre' : 'Film', ENT_QUOTES, 'UTF-8') ?>
                 </span>
 
-                <h1 style="font-size: 2.2em; margin-bottom: 20px; color: #2c3e50;">
+                <h1>
                     <?= htmlspecialchars($ressource['titre'], ENT_QUOTES, 'UTF-8') ?>
                 </h1>
 
@@ -28,7 +28,7 @@
                         echo $i <= $note ? '★' : '☆';
                     }
                     ?>
-                    <span style="color: #7f8c8d; font-size: 0.5em; margin-left: 10px;">
+                    <span class="rating-text" style="font-size: 0.5em; margin-left: 10px;">
                         <?= htmlspecialchars(number_format($ressource['note_moyenne'], 1), ENT_QUOTES, 'UTF-8') ?>/5
                         (<?= htmlspecialchars($ressource['nb_evaluations'], ENT_QUOTES, 'UTF-8') ?> évaluation<?= $ressource['nb_evaluations'] > 1 ? 's' : '' ?>)
                     </span>
@@ -185,13 +185,13 @@
             </div>
         <?php elseif (!Auth::check()): ?>
             <div class="alert alert-info">
-                <a href="index.php?controller=auth&action=login" style="color: #0c5460; font-weight: 600;">Connectez-vous</a> pour évaluer cette ressource
+                <a href="index.php?controller=auth&action=login" class="alert-link">Connectez-vous</a> pour évaluer cette ressource
             </div>
         <?php endif; ?>
 
         <!-- Évaluations -->
         <div class="section">
-            <h3 style="color: #2c3e50; margin-bottom: 20px; font-size: 1.5em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+            <h3 class="section-title" style="font-size: 1.5em; border-bottom: 2px solid var(--color-primary); padding-bottom: 10px;">
                 Évaluations
             </h3>
 
