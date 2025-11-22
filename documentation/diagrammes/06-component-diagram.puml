@@ -2,204 +2,50 @@
 
 ' Configuration
 skinparam componentStyle rectangle
+skinparam linetype polyline
 
-title Diagramme de Composants - Architecture MVC Médiathèque
+title Diagramme de Composants - Architecture MVC
 
 ' Frontend
-package "Frontend (Client)" {
+package "Frontend" {
   [Navigateur Web] as browser
-  component "HTML/CSS/JS" as frontend {
-    [Pages HTML] as html
-    [Styles CSS] as css
-    [Scripts JavaScript] as js
-  }
+  [HTML/CSS/JS] as frontend
 }
 
 ' Backend
-package "Backend (Serveur PHP)" {
+package "Backend PHP" {
+  [index.php\nRouter] as router
 
-  ' Point d'entrée
-  component "Entry Point" {
-    [index.php] as index
-    [Router] as router
+  component "MVC" {
+    [Controllers] as ctrl
+    [Models] as models
+    [Views] as views
   }
 
-  ' Core Framework
-  component "Core Framework" {
-    [Database] as database
-    [Auth] as auth
-    [Controller Base] as baseController
-    [Model Base] as baseModel
-  }
-
-  ' Controllers
-  component "Controllers" {
-    [HomeController] as homeCtrl
-    [AuthController] as authCtrl
-    [CatalogueController] as catalogueCtrl
-    [RessourceController] as ressourceCtrl
-    [LivreController] as livreCtrl
-    [FilmController] as filmCtrl
-    [GenreController] as genreCtrl
-    [ThemeController] as themeCtrl
-    [EvaluationController] as evalCtrl
-    [AdminController] as adminCtrl
-  }
-
-  ' Models
-  component "Models" {
-    [Utilisateur] as userModel
-    [Ressource] as ressourceModel
-    [Livre] as livreModel
-    [Film] as filmModel
-    [Genre] as genreModel
-    [Theme] as themeModel
-    [Evaluation] as evalModel
-  }
-
-  ' Views
-  component "Views" {
-    [Layout] as layout
-    [Home Views] as homeViews
-    [Auth Views] as authViews
-    [Catalogue Views] as catalogueViews
-    [Ressource Views] as ressourceViews
-    [Admin Views] as adminViews
-  }
-
-  ' Configuration
-  component "Configuration" {
-    [config.php] as config
-  }
+  [Auth] as auth
+  [Database] as db
 }
 
 ' Base de données
-database "MySQL Database" {
-  [Tables] as tables
-  component "Schema" {
-    [utilisateur]
-    [ressource]
-    [livre]
-    [film]
-    [genre]
-    [theme]
-    [evaluation]
-    [ressource_genre]
-    [ressource_theme]
-  }
-}
+database "MySQL" as mysql
 
-' Relations Frontend <-> Backend
-browser --> index : HTTP Request
-index --> browser : HTTP Response (HTML)
-html ..> css : utilise
-html ..> js : utilise
+' Relations principales
+browser --> router : HTTP
+router --> ctrl
+ctrl --> models
+ctrl --> views
+ctrl ..> auth
+models --> db
+db --> mysql
 
-' Relations Entry Point
-index --> router : route request
-router --> homeCtrl
-router --> authCtrl
-router --> catalogueCtrl
-router --> ressourceCtrl
-router --> livreCtrl
-router --> filmCtrl
-router --> genreCtrl
-router --> themeCtrl
-router --> evalCtrl
-router --> adminCtrl
-
-' Relations Controllers -> Core
-homeCtrl --|> baseController
-authCtrl --|> baseController
-catalogueCtrl --|> baseController
-ressourceCtrl --|> baseController
-livreCtrl --|> baseController
-filmCtrl --|> baseController
-genreCtrl --|> baseController
-themeCtrl --|> baseController
-evalCtrl --|> baseController
-adminCtrl --|> baseController
-
-baseController ..> auth : utilise
-baseController ..> layout : render
-
-' Relations Controllers -> Models
-authCtrl --> userModel
-catalogueCtrl --> ressourceModel
-catalogueCtrl --> genreModel
-catalogueCtrl --> themeModel
-ressourceCtrl --> ressourceModel
-ressourceCtrl --> evalModel
-livreCtrl --> livreModel
-livreCtrl --> genreModel
-livreCtrl --> themeModel
-filmCtrl --> filmModel
-filmCtrl --> genreModel
-filmCtrl --> themeModel
-genreCtrl --> genreModel
-themeCtrl --> themeModel
-evalCtrl --> evalModel
-adminCtrl --> ressourceModel
-adminCtrl --> userModel
-
-' Relations Models -> Core
-userModel --|> baseModel
-ressourceModel --|> baseModel
-livreModel --|> baseModel
-filmModel --|> baseModel
-genreModel --|> baseModel
-themeModel --|> baseModel
-evalModel --|> baseModel
-
-baseModel ..> database : utilise
-
-' Relations Models -> Views
-homeCtrl --> homeViews : données
-authCtrl --> authViews : données
-catalogueCtrl --> catalogueViews : données
-ressourceCtrl --> ressourceViews : données
-adminCtrl --> adminViews : données
-
-' Relations Database
-database --> config : credentials
-database --> tables : connexion PDO
-
-' Relations Models -> Database
-userModel --> utilisateur
-ressourceModel --> ressource
-livreModel --> livre
-livreModel --> ressource
-filmModel --> film
-filmModel --> ressource
-genreModel --> genre
-genreModel --> ressource_genre
-themeModel --> theme
-themeModel --> ressource_theme
-evalModel --> evaluation
-
-' Notes
 note right of router
-  Pattern Front Controller
-  Routes toutes les requêtes
-  Format: /controller/action/params
+  Front Controller
+  Pattern MVC
 end note
 
-note right of database
-  Singleton Pattern
-  Connexion PDO unique
-  Prepared Statements
-end note
-
-note bottom of baseModel
-  Tous les modèles héritent
-  de Model et ont accès à
-  l'instance PDO
-end note
-
-note bottom of auth
-  Gestion centralisée
-  de l'authentification
-  et des autorisations
+note right of db
+  Singleton PDO
+  Protection SQL
 end note
 
 @enduml

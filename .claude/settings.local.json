@@ -12,7 +12,8 @@
       "Bash(java -version:*)",
       "Bash(archlinux-java status:*)",
       "Bash(plantuml:*)",
-      "Bash(sudo pacman:*)"
+      "Bash(sudo pacman:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []

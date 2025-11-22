@@ -2,6 +2,7 @@
 
 ' Configuration
 skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
 autonumber
 
 title Diagramme de Séquence - Création d'un Livre (CRUD)
@@ -57,12 +58,6 @@ deactivate router
 == Soumission du formulaire ==
 biblio -> router : POST /livre/store
 activate router
-
-note right
-  **VULNÉRABILITÉ CSRF**
-  Formulaire sans token
-  Protection manquante
-end note
 
 router -> auth : requireStaff()
 activate auth

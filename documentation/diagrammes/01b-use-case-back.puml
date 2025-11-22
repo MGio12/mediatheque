@@ -1,0 +1,50 @@
+@startuml Use Case Diagram - Back Office
+
+' Configuration
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+title Cas d'Utilisation - Back Office (Personnel)
+
+' Acteurs
+actor "Bibliothécaire" as biblio
+actor "Administrateur" as admin
+
+' Relations d'héritage
+biblio <|-- admin
+
+' Package Back Office
+package "Back Office" {
+  usecase "Gérer les livres" as UC20
+  usecase "Gérer les films" as UC21
+  usecase "Gérer les genres" as UC22
+  usecase "Gérer les thèmes" as UC23
+  usecase "Voir statistiques" as UC24
+  usecase "Créer une ressource" as UC25
+  usecase "Modifier une ressource" as UC26
+  usecase "Supprimer une ressource" as UC27
+}
+
+' Relations Bibliothécaire/Admin
+biblio --> UC20
+biblio --> UC21
+biblio --> UC22
+biblio --> UC23
+biblio --> UC24
+
+' Relations include
+UC20 .> UC25 : <<include>>
+UC20 .> UC26 : <<include>>
+UC20 .> UC27 : <<include>>
+
+UC21 .> UC25 : <<include>>
+UC21 .> UC26 : <<include>>
+UC21 .> UC27 : <<include>>
+
+' Notes
+note left of UC20
+  Réservé au personnel
+  (bibliothécaire et admin)
+end note
+
+@enduml

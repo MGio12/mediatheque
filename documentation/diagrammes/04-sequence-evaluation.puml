@@ -2,6 +2,7 @@
 
 ' Configuration
 skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
 autonumber
 
 title Diagramme de Séquence - Évaluation d'une Ressource
@@ -60,14 +61,6 @@ deactivate router
 == Soumission de l'évaluation ==
 user -> router : POST /evaluation/create
 activate router
-
-note right
-  **VULNÉRABILITÉ CSRF**
-  Pas de token de protection
-  Une attaque CSRF pourrait
-  soumettre des évaluations
-  à l'insu de l'utilisateur
-end note
 
 router -> auth : requireAuth()
 activate auth

@@ -2,6 +2,7 @@
 
 ' Configuration
 skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
 autonumber
 
 title Diagramme de Séquence - Authentification Utilisateur
@@ -74,11 +75,6 @@ else Mot de passe valide
   controller -> auth : Créer session
   activate auth
   auth -> auth : $_SESSION['user'] = userData
-  note right
-    **AMÉLIORATION RECOMMANDÉE :**
-    session_regenerate_id(true)
-    pour éviter session fixation
-  end note
   auth --> controller : Session créée
   deactivate auth
 
