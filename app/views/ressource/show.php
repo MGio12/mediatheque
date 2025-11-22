@@ -46,6 +46,13 @@
                     <?= htmlspecialchars($ressource['annee'], ENT_QUOTES, 'UTF-8') ?>
                 </div>
 
+                <?php if (!empty($ressource['pays'])): ?>
+                    <div class="info-row">
+                        <span class="info-label">Pays de l'intrigue :</span>
+                        <?= htmlspecialchars($ressource['pays'], ENT_QUOTES, 'UTF-8') ?>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($ressource['type'] === 'livre'): ?>
                     <?php if (!empty($ressource['isbn'])): ?>
                         <div class="info-row">
@@ -67,6 +74,13 @@
                             <?= htmlspecialchars($ressource['nombre_pages'], ENT_QUOTES, 'UTF-8') ?> pages
                         </div>
                     <?php endif; ?>
+
+                    <?php if (!empty($ressource['prix'])): ?>
+                        <div class="info-row">
+                            <span class="info-label">Prix :</span>
+                            <?= htmlspecialchars(number_format($ressource['prix'], 2, ',', ' '), ENT_QUOTES, 'UTF-8') ?> €
+                        </div>
+                    <?php endif; ?>
                 <?php else: ?>
                     <?php if (!empty($ressource['duree'])): ?>
                         <div class="info-row">
@@ -86,6 +100,13 @@
                         <div class="info-row">
                             <span class="info-label">Langue :</span>
                             <?= htmlspecialchars($ressource['langue'], ENT_QUOTES, 'UTF-8') ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($ressource['sous_titres'])): ?>
+                        <div class="info-row">
+                            <span class="info-label">Sous-titres :</span>
+                            <?= htmlspecialchars($ressource['sous_titres'], ENT_QUOTES, 'UTF-8') ?>
                         </div>
                     <?php endif; ?>
                 <?php endif; ?>

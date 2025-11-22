@@ -137,8 +137,8 @@ class Ressource extends Model {
     public function getNewest($limit = 10) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages,
-                    f.duree, f.support, f.langue
+                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    f.duree, f.support, f.langue, f.sous_titres
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
                 LEFT JOIN film f ON r.id_ressource = f.id_ressource
@@ -160,8 +160,8 @@ class Ressource extends Model {
     public function getTopRated($limit = 10, $minEvaluations = 1) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages,
-                    f.duree, f.support, f.langue,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    f.duree, f.support, f.langue, f.sous_titres,
                     AVG(e.note) as note_moyenne,
                     COUNT(e.id_evaluation) as nb_evaluations
                 FROM ressource r
@@ -188,8 +188,8 @@ class Ressource extends Model {
     public function getByTheme($idTheme) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages,
-                    f.duree, f.support, f.langue
+                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    f.duree, f.support, f.langue, f.sous_titres
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
                 LEFT JOIN film f ON r.id_ressource = f.id_ressource

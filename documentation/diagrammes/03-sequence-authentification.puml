@@ -1,0 +1,109 @@
+@startuml Sequence Diagram - Authentification
+
+' Configuration
+skinparam sequenceMessageAlign center
+autonumber
+
+title Diagramme de Séquence - Authentification Utilisateur
+
+actor Utilisateur as user
+participant "index.php\n(Router)" as router
+participant AuthController as controller
+participant "Auth\n(Helper)" as auth
+participant "Utilisateur\n(Model)" as model
+database "MySQL\nDatabase" as db
+
+== Inscription ==
+user -> router : POST /auth/register
+activate router
+
+router -> controller : register()
+activate controller
+
+controller -> controller : Valider données\n(email, password, etc.)
+
+alt Validation échouée
+  controller -> user : Afficher erreurs
+else Validation réussie
+  controller -> model : findByEmail(email)
+  activate model
+  model -> db : SELECT * FROM utilisateur\nWHERE email = ?
+  activate db
+  db --> model : Résultat
+  deactivate db
+  model --> controller : null (email disponible)
+  deactivate model
+
+  controller -> model : create(data)
+  activate model
+  model -> model : password_hash(password)
+  model -> db : INSERT INTO utilisateur
+  activate db
+  db --> model : ID nouvel utilisateur
+  deactivate db
+  model --> controller : true
+  deactivate model
+
+  controller -> user : Redirection /auth/login\nMessage succès
+end
+
+deactivate controller
+deactivate router
+
+== Connexion ==
+user -> router : POST /auth/login
+activate router
+
+router -> controller : login()
+activate controller
+
+controller -> model : findByEmail(email)
+activate model
+model -> db : SELECT * FROM utilisateur\nWHERE email = ?
+activate db
+db --> model : Données utilisateur
+deactivate db
+model --> controller : userData
+deactivate model
+
+controller -> controller : password_verify(password, hash)
+
+alt Mot de passe invalide
+  controller -> user : Message erreur
+else Mot de passe valide
+  controller -> auth : Créer session
+  activate auth
+  auth -> auth : $_SESSION['user'] = userData
+  note right
+    **AMÉLIORATION RECOMMANDÉE :**
+    session_regenerate_id(true)
+    pour éviter session fixation
+  end note
+  auth --> controller : Session créée
+  deactivate auth
+
+  controller -> user : Redirection /\nMessage succès
+end
+
+deactivate controller
+deactivate router
+
+== Déconnexion ==
+user -> router : GET /auth/logout
+activate router
+
+router -> controller : logout()
+activate controller
+
+controller -> auth : Détruire session
+activate auth
+auth -> auth : session_destroy()
+auth --> controller : Session détruite
+deactivate auth
+
+controller -> user : Redirection /\nMessage succès
+
+deactivate controller
+deactivate router
+
+@enduml

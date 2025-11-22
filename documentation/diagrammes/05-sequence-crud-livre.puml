@@ -1,0 +1,129 @@
+@startuml Sequence Diagram - CRUD Livre
+
+' Configuration
+skinparam sequenceMessageAlign center
+autonumber
+
+title Diagramme de Séquence - Création d'un Livre (CRUD)
+
+actor "Bibliothécaire" as biblio
+participant "index.php\n(Router)" as router
+participant "Auth\n(Helper)" as auth
+participant LivreController as controller
+participant "Livre\n(Model)" as livreModel
+participant "Genre\n(Model)" as genreModel
+participant "Theme\n(Model)" as themeModel
+database "MySQL\nDatabase" as db
+
+== Affichage du formulaire ==
+biblio -> router : GET /livre/create
+activate router
+
+router -> auth : requireStaff()
+activate auth
+auth -> auth : Vérifier rôle\n(bibliothecaire ou admin)
+alt Non autorisé
+  auth -> biblio : Redirection /\nMessage erreur
+else Autorisé
+  auth --> router : OK
+  deactivate auth
+
+  router -> controller : create()
+  activate controller
+
+  controller -> genreModel : getAll()
+  activate genreModel
+  genreModel -> db : SELECT * FROM genre
+  activate db
+  db --> genreModel : Liste genres
+  deactivate db
+  genreModel --> controller : genres[]
+  deactivate genreModel
+
+  controller -> themeModel : getAll()
+  activate themeModel
+  themeModel -> db : SELECT * FROM theme
+  activate db
+  db --> themeModel : Liste thèmes
+  deactivate db
+  themeModel --> controller : themes[]
+  deactivate themeModel
+
+  controller -> biblio : Afficher formulaire\navec genres et thèmes
+  deactivate controller
+end
+deactivate router
+
+== Soumission du formulaire ==
+biblio -> router : POST /livre/store
+activate router
+
+note right
+  **VULNÉRABILITÉ CSRF**
+  Formulaire sans token
+  Protection manquante
+end note
+
+router -> auth : requireStaff()
+activate auth
+auth --> router : OK
+deactivate auth
+
+router -> controller : store()
+activate controller
+
+controller -> livreModel : validate(data)
+activate livreModel
+livreModel -> livreModel : Vérifier :\n- titre non vide\n- ISBN 13 chiffres\n- année 1800-2100\n- prix >= 0
+livreModel --> controller : errors[] ou true
+deactivate livreModel
+
+alt Validation échouée
+  controller -> biblio : Réafficher formulaire\navec erreurs
+else Validation réussie
+
+  controller -> db : BEGIN TRANSACTION
+  activate db
+
+  controller -> livreModel : createRessource(data)
+  activate livreModel
+  livreModel -> db : INSERT INTO ressource\n(type='livre', titre, auteur, ...)
+  db --> livreModel : id_ressource
+  livreModel --> controller : ressourceId
+  deactivate livreModel
+
+  controller -> livreModel : createLivre(ressourceId, data)
+  activate livreModel
+  livreModel -> db : INSERT INTO livre\n(id_ressource, isbn, editeur, ...)
+  db --> livreModel : Success
+  livreModel --> controller : true
+  deactivate livreModel
+
+  loop Pour chaque genre sélectionné
+    controller -> livreModel : associateGenre(ressourceId, genreId)
+    activate livreModel
+    livreModel -> db : INSERT INTO ressource_genre
+    db --> livreModel : Success
+    livreModel --> controller : true
+    deactivate livreModel
+  end
+
+  loop Pour chaque thème sélectionné
+    controller -> livreModel : associateTheme(ressourceId, themeId)
+    activate livreModel
+    livreModel -> db : INSERT INTO ressource_theme
+    db --> livreModel : Success
+    livreModel --> controller : true
+    deactivate livreModel
+  end
+
+  controller -> db : COMMIT
+  deactivate db
+
+  controller -> biblio : Redirection /admin/livres\nMessage succès
+end
+
+deactivate controller
+deactivate router
+
+@enduml

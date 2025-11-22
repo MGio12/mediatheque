@@ -70,6 +70,7 @@ CREATE TABLE film (
     duree INT NOT NULL,
     support ENUM('DVD', 'Blu-ray', 'Streaming') NOT NULL,
     langue VARCHAR(50) NOT NULL,
+    sous_titres VARCHAR(255),
     CONSTRAINT fk_film_ressource FOREIGN KEY (id_ressource)
         REFERENCES ressource(id_ressource)
         ON DELETE CASCADE

@@ -1,0 +1,121 @@
+@startuml Sequence Diagram - Évaluation
+
+' Configuration
+skinparam sequenceMessageAlign center
+autonumber
+
+title Diagramme de Séquence - Évaluation d'une Ressource
+
+actor Utilisateur as user
+participant "index.php\n(Router)" as router
+participant "Auth\n(Helper)" as auth
+participant EvaluationController as controller
+participant "Evaluation\n(Model)" as evalModel
+participant "Ressource\n(Model)" as ressModel
+database "MySQL\nDatabase" as db
+
+== Affichage de la page ressource ==
+user -> router : GET /ressource/show/5
+activate router
+
+router -> auth : check()
+activate auth
+auth --> router : true (connecté)
+deactivate auth
+
+router -> controller : show(5)
+activate controller
+
+controller -> ressModel : findById(5)
+activate ressModel
+ressModel -> db : SELECT ressource + livre/film\nWHERE id = 5
+activate db
+db --> ressModel : Données ressource
+deactivate db
+ressModel --> controller : ressource
+deactivate ressModel
+
+controller -> ressModel : getEvaluations(5)
+activate ressModel
+ressModel -> db : SELECT evaluation + utilisateur\nWHERE id_ressource = 5
+activate db
+db --> ressModel : Liste évaluations
+deactivate db
+ressModel --> controller : evaluations[]
+deactivate ressModel
+
+controller -> evalModel : hasUserEvaluated(userId, 5)
+activate evalModel
+evalModel -> db : SELECT COUNT(*)\nWHERE user=? AND ressource=5
+activate db
+db --> evalModel : 0 (pas encore évalué)
+deactivate db
+evalModel --> controller : false
+deactivate evalModel
+
+controller -> user : Afficher page\navec formulaire évaluation
+deactivate controller
+deactivate router
+
+== Soumission de l'évaluation ==
+user -> router : POST /evaluation/create
+activate router
+
+note right
+  **VULNÉRABILITÉ CSRF**
+  Pas de token de protection
+  Une attaque CSRF pourrait
+  soumettre des évaluations
+  à l'insu de l'utilisateur
+end note
+
+router -> auth : requireAuth()
+activate auth
+auth -> auth : Vérifier session
+auth --> router : OK (authentifié)
+deactivate auth
+
+router -> controller : create()
+activate controller
+
+controller -> controller : Valider données\n(note: 0-5, id_ressource existe)
+
+alt Validation échouée
+  controller -> user : Afficher erreurs
+else Validation réussie
+
+  controller -> evalModel : hasUserEvaluated(userId, ressourceId)
+  activate evalModel
+  evalModel -> db : SELECT COUNT(*)
+  activate db
+  db --> evalModel : 0
+  deactivate db
+  evalModel --> controller : false
+  deactivate evalModel
+
+  alt Utilisateur a déjà évalué
+    controller -> user : Erreur : déjà évalué
+  else Première évaluation
+    controller -> evalModel : create(data)
+    activate evalModel
+
+    evalModel -> db : BEGIN TRANSACTION
+    activate db
+
+    evalModel -> db : INSERT INTO evaluation\n(user, ressource, note, critique)
+    db --> evalModel : ID évaluation
+
+    evalModel -> db : COMMIT
+    deactivate db
+
+    evalModel --> controller : true
+    deactivate evalModel
+
+    controller -> user : Redirection vers ressource\nMessage succès
+  end
+end
+
+deactivate controller
+deactivate router
+
+@enduml

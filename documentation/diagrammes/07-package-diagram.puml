@@ -1,0 +1,270 @@
+@startuml Package Diagram - Médiathèque
+
+' Configuration
+skinparam packageStyle rectangle
+
+title Diagramme de Packages - Organisation du Code
+
+' Package racine
+package "mediatheque" <<Folder>> {
+
+  ' Configuration
+  package "config" <<Folder>> {
+    artifact "config.php" as config
+  }
+
+  ' Core Framework
+  package "core" <<Folder>> {
+    artifact "Controller.php" as controller
+    artifact "Model.php" as model
+    artifact "Database.php" as database
+    artifact "Auth.php" as auth
+    artifact "Router.php" as router
+  }
+
+  ' Application
+  package "app" <<Folder>> {
+
+    ' Controllers
+    package "controllers" <<Folder>> {
+      artifact "HomeController.php" as homeCtrl
+      artifact "AuthController.php" as authCtrl
+      artifact "CatalogueController.php" as catCtrl
+      artifact "RessourceController.php" as resCtrl
+      artifact "LivreController.php" as livreCtrl
+      artifact "FilmController.php" as filmCtrl
+      artifact "GenreController.php" as genreCtrl
+      artifact "ThemeController.php" as themeCtrl
+      artifact "EvaluationController.php" as evalCtrl
+      artifact "AdminController.php" as adminCtrl
+    }
+
+    ' Models
+    package "models" <<Folder>> {
+      artifact "Utilisateur.php" as userModel
+      artifact "Ressource.php" as ressModel
+      artifact "Livre.php" as livreModel
+      artifact "Film.php" as filmModel
+      artifact "Genre.php" as genreModel
+      artifact "Theme.php" as themeModel
+      artifact "Evaluation.php" as evalModel
+    }
+
+    ' Views
+    package "views" <<Folder>> {
+
+      package "partials" <<Folder>> {
+        artifact "header.php" as header
+        artifact "footer.php" as footer
+      }
+
+      artifact "layout.php" as layout
+
+      package "home" <<Folder>> {
+        artifact "index.php" as homeView
+      }
+
+      package "auth" <<Folder>> {
+        artifact "login.php" as loginView
+        artifact "register.php" as registerView
+      }
+
+      package "catalogue" <<Folder>> {
+        artifact "index.php" as catIndex
+        artifact "nouveautes.php" as nouveautes
+        artifact "top.php" as top
+        artifact "selection.php" as selection
+        artifact "search.php" as search
+      }
+
+      package "ressource" <<Folder>> {
+        artifact "show.php" as showRess
+      }
+
+      package "admin" <<Folder>> {
+        artifact "dashboard.php" as dashboard
+
+        package "livre" <<Folder>> {
+          artifact "index.php" as livreIndex
+          artifact "create.php" as livreCreate
+          artifact "edit.php" as livreEdit
+        }
+
+        package "film" <<Folder>> {
+          artifact "index.php" as filmIndex
+          artifact "create.php" as filmCreate
+          artifact "edit.php" as filmEdit
+        }
+
+        package "genre" <<Folder>> {
+          artifact "index.php" as genreIndex
+          artifact "create.php" as genreCreate
+          artifact "edit.php" as genreEdit
+        }
+
+        package "theme" <<Folder>> {
+          artifact "index.php" as themeIndex
+          artifact "create.php" as themeCreate
+          artifact "edit.php" as themeEdit
+        }
+      }
+    }
+  }
+
+  ' Public (Assets)
+  package "public" <<Folder>> {
+    package "css" <<Folder>> {
+      artifact "style.css" as css
+    }
+
+    package "js" <<Folder>> {
+      artifact ".gitkeep" as jskeep
+    }
+
+    package "img" <<Folder>> {
+      package "livres" <<Folder>> {
+        artifact "*.jpg" as livresImg
+      }
+      package "films" <<Folder>> {
+        artifact "*.jpg" as filmsImg
+      }
+      package "placeholders" <<Folder>> {
+        artifact "cover-default.jpg" as placeholder
+      }
+    }
+  }
+
+  ' SQL
+  package "sql" <<Folder>> {
+    artifact "schema.sql" as schema
+    artifact "data.sql" as data
+  }
+
+  ' Documentation
+  package "documentation" <<Folder>> {
+    package "diagrammes" <<Folder>> {
+      artifact "*.puml" as diagrams
+    }
+    artifact "README.md" as readme
+    artifact "ARCHITECTURE.md" as archi
+    artifact "INSTALLATION.md" as install
+  }
+
+  ' Root files
+  artifact "index.php" as indexFile
+  artifact "migrate_add_fields.php" as migrate
+  artifact "seed.php" as seed
+}
+
+' Relations de dépendance
+
+' Core dependencies
+controller ..> auth : use
+controller ..> router : use
+model ..> database : use
+
+' Controllers dependencies
+homeCtrl ..> controller : extends
+authCtrl ..> controller : extends
+catCtrl ..> controller : extends
+resCtrl ..> controller : extends
+livreCtrl ..> controller : extends
+filmCtrl ..> controller : extends
+genreCtrl ..> controller : extends
+themeCtrl ..> controller : extends
+evalCtrl ..> controller : extends
+adminCtrl ..> controller : extends
+
+' Models dependencies
+userModel ..> model : extends
+ressModel ..> model : extends
+livreModel ..> model : extends
+filmModel ..> model : extends
+genreModel ..> model : extends
+themeModel ..> model : extends
+evalModel ..> model : extends
+
+' Controllers -> Models
+authCtrl ..> userModel : use
+catCtrl ..> ressModel : use
+catCtrl ..> genreModel : use
+catCtrl ..> themeModel : use
+resCtrl ..> ressModel : use
+resCtrl ..> evalModel : use
+livreCtrl ..> livreModel : use
+filmCtrl ..> filmModel : use
+genreCtrl ..> genreModel : use
+themeCtrl ..> themeModel : use
+evalCtrl ..> evalModel : use
+adminCtrl ..> ressModel : use
+
+' Controllers -> Views
+homeCtrl ..> homeView : render
+authCtrl ..> loginView : render
+authCtrl ..> registerView : render
+catCtrl ..> catIndex : render
+catCtrl ..> nouveautes : render
+catCtrl ..> top : render
+catCtrl ..> selection : render
+resCtrl ..> showRess : render
+livreCtrl ..> livreIndex : render
+livreCtrl ..> livreCreate : render
+livreCtrl ..> livreEdit : render
+filmCtrl ..> filmIndex : render
+adminCtrl ..> dashboard : render
+
+' Views -> Layout
+homeView ..> layout : use
+loginView ..> layout : use
+catIndex ..> layout : use
+showRess ..> layout : use
+dashboard ..> layout : use
+
+' Layout -> Partials
+layout ..> header : include
+layout ..> footer : include
+
+' Config dependencies
+database ..> config : use
+indexFile ..> router : use
+
+' Scripts dependencies
+migrate ..> config : use
+seed ..> config : use
+seed ..> database : use
+
+' SQL
+schema ..> data : imported after
+
+' Notes
+note right of core
+  Framework de base
+  Pattern MVC
+  Réutilisable
+end note
+
+note right of controllers
+  9 contrôleurs
+  Logique métier
+  Gestion requêtes
+end note
+
+note right of models
+  7 modèles
+  Accès données
+  Validation
+end note
+
+note right of views
+  Structure organisée
+  Layout principal
+  Partials réutilisables
+end note
+
+note bottom of config
+  Credentials DB
+  À déplacer dans .env
+  pour la sécurité
+end note
+
+@enduml
