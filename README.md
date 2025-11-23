@@ -140,7 +140,7 @@ mediatheque/
 #### Étape 1 : Cloner le dépôt
 
 ```bash
-git clone https://github.com/votre-equipe/mediatheque.git
+git clone https://github.com/MGio12/mediatheque.git
 cd mediatheque
 ```
 
