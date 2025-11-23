@@ -525,8 +525,6 @@ class FavoriController extends Controller {
 | **Année universitaire** | 2025/2026 |
 | **Institution** | IUT Nice Côte d'Azur |
 | **Département** | Informatique |
-| **Enseignant responsable** | Thanh Phuong NGUYEN |
-| **Email contact** | thanh-phuong.nguyen@univcotedazur.fr |
 
 ### Inspiration
 
@@ -576,37 +574,6 @@ Ce projet a été développé dans un cadre pédagogique. Avant un déploiement 
 - Système de favoris utilisateur
 - Historique de consultation
 - Mode hors ligne (PWA)
-
----
-
-## SUPPORT ET CONTRIBUTION
-
-### Signaler un problème
-
-Pour signaler un bug ou proposer une amélioration :
-1. Vérifier qu'il n'existe pas déjà dans les issues
-2. Créer une issue détaillée avec :
-   - Description du problème
-   - Étapes pour reproduire
-   - Comportement attendu vs observé
-   - Screenshots si pertinent
-
-### Contribuer au projet
-
-1. Fork le dépôt
-2. Créer une branche pour votre fonctionnalité (`git checkout -b feature/ma-fonctionnalite`)
-3. Commiter vos changements (`git commit -m 'Ajout de ma fonctionnalité'`)
-4. Pusher vers la branche (`git push origin feature/ma-fonctionnalite`)
-5. Créer une Pull Request
-
-**Convention de commit :**
-- `feat:` Nouvelle fonctionnalité
-- `fix:` Correction de bug
-- `docs:` Documentation
-- `style:` Formatage, CSS
-- `refactor:` Refactorisation
-- `test:` Tests
-- `chore:` Maintenance
 
 ---
 
