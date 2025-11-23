@@ -549,19 +549,6 @@ Dans le cadre pédagogique, les technologies suivantes étaient obligatoires :
 
 ## NOTES IMPORTANTES
 
-### Environnement de développement vs Production
-
-Ce projet a été développé dans un cadre pédagogique. Avant un déploiement en production réel, il est nécessaire de :
-
-| Aspect | Action requise |
-|--------|---------------|
-| **Sécurité** | Implémenter CSRF, rate limiting, HTTPS obligatoire |
-| **Performance** | Ajouter cache (Redis), CDN pour assets, pagination |
-| **Monitoring** | Logs détaillés, monitoring des erreurs |
-| **Backup** | Sauvegardes automatiques quotidiennes |
-| **Tests** | Tests unitaires et d'intégration |
-| **Documentation** | Compléter la documentation API |
-
 ### Améliorations futures possibles
 
 - Système de réservation/emprunt de ressources physiques
