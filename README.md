@@ -152,14 +152,14 @@ mysql -u root -p
 
 Dans l'invite MySQL :
 ```sql
-CREATE DATABASE gm401942_elibrary2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE mediatheque CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 EXIT;
 ```
 
 #### Étape 3 : Importer le schéma
 
 ```bash
-mysql -u root -p gm401942_elibrary2 < sql/schema.sql
+mysql -u root -p mediatheque < sql/schema.sql
 ```
 
 Cette commande crée toutes les tables nécessaires :
@@ -173,7 +173,7 @@ Cette commande crée toutes les tables nécessaires :
 #### Étape 4 : Importer les données de test (optionnel mais recommandé)
 
 ```bash
-mysql -u root -p gm401942_elibrary2 < sql/data.sql
+mysql -u root -p mediatheque < sql/data.sql
 ```
 
 Ce fichier contient :
@@ -184,31 +184,24 @@ Ce fichier contient :
 
 #### Étape 5 : Configurer la connexion à la base de données
 
-Le fichier `config/config.php` détecte automatiquement l'environnement.
+Modifier le fichier `config/config.php` avec vos informations :
 
-**Pour le développement local (MAMP/XAMPP) :**
-```php
-// Détection automatique - pas de modification nécessaire
-// Port 8889 (MAMP) ou 3306 (standard) détecté automatiquement
-```
-
-**Configuration automatique :**
-- Host : `localhost`
-- Port : `8889` (MAMP) ou `3306` (standard)
-- Base : `gm401942_elibrary2`
-- User : `gm401942`
-- Password : `gm401942`
-
-**Pour la production (serveur IUT) :**
-
-Modifier uniquement si nécessaire dans `config/config.php` :
 ```php
 define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_NAME', 'gm401942_elibrary2');
-define('DB_USER', 'gm401942');
-define('DB_PASSWORD', 'votre_mot_de_passe_production');
+define('DB_PORT', '3306');          // 3306 (standard) ou 8889 (MAMP)
+define('DB_NAME', 'mediatheque');   // Nom de votre base de données
+define('DB_USER', 'root');          // Votre utilisateur MySQL
+define('DB_PASSWORD', '');          // Votre mot de passe MySQL
 ```
+
+**Configuration selon votre environnement :**
+
+| Environnement | Host | Port | User | Password |
+|--------------|------|------|------|----------|
+| **XAMPP** | localhost | 3306 | root | (vide) |
+| **MAMP** | localhost | 8889 | root | root |
+| **Serveur IUT** | localhost | 3306 | votre_user | votre_password |
+| **Production** | localhost | 3306 | votre_user_prod | votre_password_prod |
 
 #### Étape 6 : Démarrer le serveur
 
