@@ -1,10 +1,10 @@
-# 🏗️ Architecture E-Library
+# ARCHITECTURE E-LIBRARY
 
-## Vue d'ensemble
+## VUE D'ENSEMBLE
 
-E-Library est une application web PHP suivant le pattern **MVC (Model-View-Controller)** avec une architecture en couches.
+E-Library est une application web PHP suivant le pattern **MVC (Model-View-Controller)** avec une architecture en couches modulaire et sécurisée.
 
-## Diagramme architectural
+### Diagramme architectural global
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -62,366 +62,896 @@ E-Library est une application web PHP suivant le pattern **MVC (Model-View-Contr
           └────────────────┘
 ```
 
-## Pattern MVC
+---
 
-### 🎮 Controllers (app/controllers/)
+## PATTERN MVC - ARCHITECTURE EN COUCHES
 
-Gèrent la logique de contrôle et orchestrent les interactions.
+### Controllers (app/controllers/)
 
-**Responsabilités :**
-- Recevoir et analyser les requêtes HTTP
-- Appeler les modèles pour récupérer/modifier les données
-- Passer les données aux vues
-- Gérer les redirections
-- Vérifier les autorisations
+Les contrôleurs orchestrent la logique applicative et gèrent les interactions entre les modèles et les vues.
 
-**Liste des contrôleurs :**
-- `HomeController` : Page d'accueil
-- `AuthController` : Authentification (login, register, logout)
-- `CatalogueController` : Catalogue, recherche, nouveautés, top
-- `RessourceController` : Détails d'une ressource
-- `LivreController` : CRUD livres (admin)
-- `FilmController` : CRUD films (admin)
-- `GenreController` : CRUD genres (admin)
-- `ThemeController` : CRUD thèmes (admin)
-- `EvaluationController` : Gestion des évaluations
-- `AdminController` : Dashboard administrateur
+#### Responsabilités des contrôleurs
 
-**Base :** Tous héritent de `core/Controller.php`
+| Responsabilité | Description |
+|---------------|-------------|
+| **Gestion des requêtes** | Recevoir et analyser les requêtes HTTP (GET, POST) |
+| **Orchestration** | Appeler les modèles pour récupérer/modifier les données |
+| **Transmission** | Passer les données formatées aux vues |
+| **Navigation** | Gérer les redirections entre les pages |
+| **Sécurité** | Vérifier les autorisations d'accès via Auth |
+| **Validation** | Contrôler les données entrantes avant traitement |
 
-### 💾 Models (app/models/)
+#### Liste des contrôleurs
 
-Gèrent l'accès aux données et la logique métier.
+| Contrôleur | Rôle | Accès |
+|-----------|------|-------|
+| **HomeController** | Page d'accueil avec mise en avant | Public |
+| **AuthController** | Authentification (login, register, logout) | Public |
+| **CatalogueController** | Catalogue, recherche, nouveautés, top | Public |
+| **RessourceController** | Détails d'une ressource spécifique | Public |
+| **EvaluationController** | Gestion des notes et critiques | Utilisateur connecté |
+| **LivreController** | CRUD livres (création, modification, suppression) | Staff (bibliothécaire/admin) |
+| **FilmController** | CRUD films (création, modification, suppression) | Staff (bibliothécaire/admin) |
+| **GenreController** | CRUD genres | Administrateur |
+| **ThemeController** | CRUD thèmes | Administrateur |
+| **AdminController** | Dashboard administrateur | Administrateur |
 
-**Responsabilités :**
-- Interagir avec la base de données via PDO
-- Valider les données entrantes
-- Appliquer les règles métier
-- Retourner des données structurées
+**Héritage :** Tous les contrôleurs héritent de `core/Controller.php` qui fournit les méthodes communes (render, redirect, setFlash).
 
-**Liste des modèles :**
-- `Utilisateur` : Gestion des utilisateurs
-- `Ressource` : Ressources génériques (parent)
-- `Livre` : Spécialisation pour les livres
-- `Film` : Spécialisation pour les films
-- `Genre` : Gestion des genres
-- `Theme` : Gestion des thèmes
-- `Evaluation` : Gestion des notes et critiques
+---
 
-**Base :** Tous héritent de `core/Model.php`
+### Models (app/models/)
 
-**Pattern utilisé :** Active Record (chaque modèle représente une table)
+Les modèles gèrent l'accès aux données et implémentent la logique métier.
 
-### 🖼️ Views (app/views/)
+#### Responsabilités des modèles
 
-Affichent les données à l'utilisateur.
+| Responsabilité | Description |
+|---------------|-------------|
+| **Accès données** | Interagir avec la base de données via PDO |
+| **Validation** | Valider les données entrantes selon les règles métier |
+| **Logique métier** | Appliquer les règles et contraintes métier |
+| **Formatage** | Retourner des données structurées et formatées |
+| **Requêtes SQL** | Construire et exécuter les requêtes préparées |
 
-**Responsabilités :**
-- Générer le HTML
-- Afficher les données passées par le contrôleur
-- Échapper les variables (XSS protection)
-- Utiliser le layout et les partials
+#### Liste des modèles
 
-**Structure :**
+| Modèle | Rôle | Table(s) associée(s) |
+|--------|------|---------------------|
+| **Utilisateur** | Gestion des utilisateurs, authentification | utilisateur |
+| **Ressource** | Ressources génériques (classe parente) | ressource |
+| **Livre** | Spécialisation pour les livres | ressource + livre |
+| **Film** | Spécialisation pour les films | ressource + film |
+| **Genre** | Gestion des genres | genre + ressource_genre |
+| **Theme** | Gestion des thèmes | theme + ressource_theme |
+| **Evaluation** | Gestion des notes et critiques | evaluation |
+
+**Héritage :** Tous les modèles héritent de `core/Model.php` qui fournit l'accès à la connexion PDO.
+
+**Pattern utilisé :** Active Record (chaque modèle représente une table et encapsule les opérations CRUD).
+
+---
+
+### Views (app/views/)
+
+Les vues sont responsables de la présentation des données à l'utilisateur.
+
+#### Responsabilités des vues
+
+| Responsabilité | Description |
+|---------------|-------------|
+| **Génération HTML** | Créer le markup HTML à partir des données |
+| **Affichage données** | Présenter les données passées par le contrôleur |
+| **Protection XSS** | Échapper systématiquement les variables avec htmlspecialchars() |
+| **Templates** | Utiliser le layout principal et les partials |
+| **UX** | Fournir une interface utilisateur intuitive et responsive |
+
+#### Structure du dossier views
+
 ```
-views/
-├── layout.php           # Template principal
+app/views/
+├── layout.php                  # Template principal (header + content + footer)
 ├── partials/
-│   ├── header.php       # En-tête
-│   └── footer.php       # Pied de page
+│   ├── header.php             # En-tête avec navigation
+│   └── footer.php             # Pied de page
 ├── home/
-│   └── index.php        # Page d'accueil
+│   └── index.php              # Page d'accueil
 ├── auth/
-│   ├── login.php
-│   └── register.php
+│   ├── login.php              # Formulaire de connexion
+│   └── register.php           # Formulaire d'inscription
 ├── catalogue/
-│   ├── index.php
-│   ├── nouveautes.php
-│   ├── top.php
-│   ├── selection.php
-│   └── search.php
+│   ├── index.php              # Catalogue complet
+│   ├── nouveautes.php         # Dernières ressources ajoutées
+│   ├── top.php                # Ressources les mieux notées
+│   ├── selection.php          # Sélection par thème
+│   └── search.php             # Recherche avancée
 ├── ressource/
-│   └── show.php
+│   └── show.php               # Détails d'une ressource
 └── admin/
-    ├── dashboard.php
-    └── [livre|film|genre|theme]/
-        ├── index.php
-        ├── create.php
-        └── edit.php
+    ├── index.php              # Dashboard admin
+    ├── livre/
+    │   ├── index.php          # Liste des livres
+    │   ├── create.php         # Formulaire ajout livre
+    │   └── edit.php           # Formulaire modification livre
+    ├── film/
+    │   ├── index.php          # Liste des films
+    │   ├── create.php         # Formulaire ajout film
+    │   └── edit.php           # Formulaire modification film
+    ├── genre/
+    │   ├── index.php          # Liste des genres
+    │   ├── create.php         # Formulaire ajout genre
+    │   └── edit.php           # Formulaire modification genre
+    └── theme/
+        ├── index.php          # Liste des thèmes
+        ├── create.php         # Formulaire ajout thème
+        └── edit.php           # Formulaire modification thème
 ```
 
-## Core Framework (core/)
+---
 
-### 🔌 Router (core/Router.php)
+## CORE FRAMEWORK (core/)
 
-**Rôle :** Analyser l'URL et router vers le bon contrôleur/action.
+### Router (core/Router.php)
 
-**Format URL :** `/controller/action/params`
+Le routeur analyse l'URL et dirige la requête vers le contrôleur et l'action appropriés.
 
-**Exemples :**
-- `/` → `HomeController::index()`
-- `/auth/login` → `AuthController::login()`
-- `/ressource/show/5` → `RessourceController::show(5)`
-- `/admin/livres` → `LivreController::index()`
+#### Fonctionnement
 
-**Sécurité :**
-- Validation des noms de contrôleurs (regex `[a-zA-Z]+`)
-- Vérification de l'existence des classes/méthodes
-- Page 404 si route invalide
+**Format URL :** `index.php?controller=nom&action=methode&param=valeur`
 
-### 🔒 Auth (core/Auth.php)
+**Exemples de routage :**
 
-**Rôle :** Gérer l'authentification et les autorisations.
+| URL | Résolution |
+|-----|-----------|
+| `index.php` | HomeController::index() |
+| `index.php?controller=auth&action=login` | AuthController::login() |
+| `index.php?controller=ressource&action=show&id=5` | RessourceController::show() |
+| `index.php?controller=admin&action=index` | AdminController::index() |
 
-**Méthodes statiques :**
-- `Auth::check()` : Vérifie si l'utilisateur est connecté
-- `Auth::user()` : Retourne l'utilisateur connecté
-- `Auth::hasRole($role)` : Vérifie si l'utilisateur a un rôle
-- `Auth::requireAuth()` : Force l'authentification
-- `Auth::requireRole($role)` : Force un rôle spécifique
-- `Auth::requireStaff()` : Force admin ou bibliothécaire
-- `Auth::isStaff()` : Vérifie si admin ou bibliothécaire
+#### Sécurité du routeur
 
-**Stockage :** Session PHP (`$_SESSION['user']`)
+| Mécanisme | Implementation |
+|-----------|---------------|
+| **Validation des noms** | Regex `[a-zA-Z]+` pour controller et action |
+| **Vérification existence** | Contrôle de l'existence du fichier contrôleur |
+| **Vérification classe** | Contrôle de l'existence de la classe |
+| **Vérification méthode** | Contrôle de l'existence de la méthode |
+| **Gestion erreurs** | Page 404 personnalisée si route invalide |
 
-**Rôles disponibles :**
-- `utilisateur` : Utilisateur standard
-- `bibliothecaire` : Bibliothécaire (peut gérer les ressources)
-- `administrateur` : Administrateur (tous les droits)
+---
 
-### 💿 Database (core/Database.php)
+### Auth (core/Auth.php)
 
-**Rôle :** Gérer la connexion à la base de données.
+La classe Auth gère l'authentification et les autorisations de manière centralisée.
 
-**Pattern :** Singleton (une seule instance PDO partagée)
+#### Méthodes statiques disponibles
 
-**Configuration :** Via `config/config.php`
+| Méthode | Paramètres | Retour | Description |
+|---------|-----------|--------|-------------|
+| `Auth::check()` | - | boolean | Vérifie si l'utilisateur est connecté |
+| `Auth::user()` | - | array/null | Retourne les données de l'utilisateur connecté |
+| `Auth::hasRole($role)` | string | boolean | Vérifie si l'utilisateur a un rôle spécifique |
+| `Auth::requireAuth()` | - | void | Force l'authentification (redirige sinon) |
+| `Auth::requireRole($role)` | string | void | Force un rôle spécifique (redirige sinon) |
+| `Auth::requireStaff()` | - | void | Force admin ou bibliothécaire |
+| `Auth::isStaff()` | - | boolean | Vérifie si admin ou bibliothécaire |
 
-**Caractéristiques :**
-- Connexion PDO persistante
-- Mode d'erreur : Exceptions
-- Charset : UTF-8
-- Détection automatique du port (3306 ou 8889 pour MAMP)
+#### Rôles disponibles
 
-### 🎛️ Controller (core/Controller.php)
+| Rôle | Valeur | Permissions |
+|------|--------|-------------|
+| **Utilisateur** | `utilisateur` | Consultation, recherche, évaluation |
+| **Bibliothécaire** | `bibliothecaire` | + Gestion des ressources (CRUD livres/films) |
+| **Administrateur** | `administrateur` | + Gestion des référentiels (genres/thèmes) + Gestion utilisateurs |
 
-**Rôle :** Classe de base pour tous les contrôleurs.
+**Stockage :** Les données de session sont stockées dans `$_SESSION['user']` après authentification réussie.
 
-**Méthodes fournies :**
-- `renderView($view, $data)` : Affiche une vue
-- `redirect($url)` : Redirige vers une URL
-- `setFlash($type, $message)` : Définit un message flash
+---
 
-### 📦 Model (core/Model.php)
+### Database (core/Database.php)
 
-**Rôle :** Classe de base pour tous les modèles.
+Gère la connexion à la base de données de manière centralisée.
 
-**Fournit :** Accès à l'instance PDO via `$this->pdo`
+#### Caractéristiques
 
-## Flux de données
+| Aspect | Détails |
+|--------|---------|
+| **Pattern** | Singleton (une seule instance PDO partagée) |
+| **Driver** | PDO MySQL |
+| **Configuration** | Via `config/config.php` |
+| **Mode erreur** | Exceptions (PDO::ERRMODE_EXCEPTION) |
+| **Charset** | UTF-8 (utf8mb4) |
+| **Connexion** | Persistante pour optimisation |
+| **Auto-détection port** | 3306 (standard) ou 8889 (MAMP) |
 
-### Exemple : Affichage d'une ressource
+#### Avantages du Singleton
+
+- Une seule connexion partagée entre tous les modèles
+- Économie de ressources
+- Gestion centralisée de la configuration
+- Facilite les transactions
+
+---
+
+### Controller (core/Controller.php)
+
+Classe de base abstraite dont héritent tous les contrôleurs.
+
+#### Méthodes fournies
+
+| Méthode | Paramètres | Description |
+|---------|-----------|-------------|
+| `render($view, $data)` | view: string, data: array | Affiche une vue avec des données |
+| `redirect($url)` | url: string | Redirige vers une URL |
+| `setFlash($type, $message)` | type: string, message: string | Définit un message flash (success/error/info) |
+
+---
+
+### Model (core/Model.php)
+
+Classe de base abstraite dont héritent tous les modèles.
+
+#### Propriétés fournies
+
+| Propriété | Type | Description |
+|-----------|------|-------------|
+| `$this->pdo` | PDO | Instance de connexion à la base de données |
+| `$this->table` | string | Nom de la table (défini dans classe enfant) |
+
+---
+
+## FLUX DE DONNÉES
+
+### Exemple 1 : Affichage d'une ressource
 
 ```
-1. User → GET /ressource/show/5
-2. index.php → Router
-3. Router → RessourceController::show(5)
-4. Controller → Auth::check() ✓
-5. Controller → Ressource::findById(5)
-6. Model → Database (PDO)
-7. Database → MySQL: SELECT * FROM ressource WHERE id=5
-8. MySQL → Database: [données]
-9. Database → Model: [données]
-10. Model → Controller: $ressource
-11. Controller → Ressource::getEvaluations(5)
-12. Model → Database → MySQL
-13. MySQL → Model → Controller: $evaluations
-14. Controller → renderView('ressource/show', [
-      'ressource' => $ressource,
-      'evaluations' => $evaluations
-    ])
-15. View → layout.php (inclut show.php)
-16. layout.php → HTML généré
-17. HTML → User (navigateur)
+ÉTAPE 1 - Requête utilisateur
+User → GET index.php?controller=ressource&action=show&id=5
+
+ÉTAPE 2 - Routage
+index.php → Router::dispatch('ressource', 'show')
+Router → RessourceController::show()
+
+ÉTAPE 3 - Vérification authentification
+Controller → Auth::check()
+(Optionnel selon la page)
+
+ÉTAPE 4 - Récupération ressource
+Controller → Ressource::findById(5)
+Model → Database::getPDO()
+Database → MySQL: SELECT r.*, l.*, f.* FROM ressource r
+                  LEFT JOIN livre l ON r.id = l.id_ressource
+                  LEFT JOIN film f ON r.id = f.id_ressource
+                  WHERE r.id = 5
+MySQL → Model → Controller: $ressource (array)
+
+ÉTAPE 5 - Récupération évaluations
+Controller → Ressource::getEvaluations(5)
+Model → Database → MySQL: SELECT e.*, u.nom, u.prenom
+                          FROM evaluation e
+                          JOIN utilisateur u ON e.id_utilisateur = u.id
+                          WHERE e.id_ressource = 5
+MySQL → Model → Controller: $evaluations (array)
+
+ÉTAPE 6 - Calcul note moyenne
+Controller → Ressource::getAverageRating(5)
+Model → Database → MySQL: SELECT AVG(note) FROM evaluation WHERE id_ressource = 5
+MySQL → Model → Controller: $noteM moyenne (float)
+
+ÉTAPE 7 - Rendu de la vue
+Controller → render('ressource/show', [
+    'ressource' => $ressource,
+    'evaluations' => $evaluations,
+    'noteMoyenne' => $noteMoyenne
+])
+View → layout.php (inclut show.php avec données)
+layout.php → HTML complet généré
+
+ÉTAPE 8 - Réponse
+HTML → User (navigateur affiche la page)
 ```
 
-### Exemple : Création d'un livre (Admin)
+---
+
+### Exemple 2 : Création d'un livre (Administrateur)
 
 ```
-1. User → POST /livre/store
-2. Router → LivreController::store()
-3. Controller → Auth::requireStaff() ✓
-4. Controller → Livre::validate($_POST)
-5. Model → Validation des données
-6. Model → Controller: errors[] ou true
-7. IF errors:
-     Controller → renderView('livre/create') avec erreurs
-   ELSE:
-     Controller → Database: BEGIN TRANSACTION
-     Controller → Livre::createRessource()
-     Model → INSERT INTO ressource
-     Model → Controller: ressourceId
-     Controller → Livre::createLivre()
-     Model → INSERT INTO livre
-     Controller → Livre::associateGenres()
-     Model → INSERT INTO ressource_genre (multiple)
-     Controller → Livre::associateThemes()
-     Model → INSERT INTO ressource_theme (multiple)
-     Controller → Database: COMMIT
-     Controller → redirect('/admin/livres')
-8. User → Page liste livres avec message succès
+ÉTAPE 1 - Requête utilisateur
+User → POST index.php?controller=livre&action=store
+POST data: {titre, auteur, annee, isbn, editeur, pages, prix, genres[], themes[]}
+
+ÉTAPE 2 - Routage et sécurité
+Router → LivreController::store()
+Controller → Auth::requireStaff()
+Auth → Vérifie $_SESSION['user']['role']
+Si non autorisé → redirect('index.php?controller=auth&action=login')
+
+ÉTAPE 3 - Validation des données
+Controller → Livre::validate($_POST)
+Model → Vérification des champs requis
+Model → Validation des types (annee: int, prix: float)
+Model → Vérification unicité ISBN
+Model → Controller: ['errors' => [...]] OU ['success' => true]
+
+ÉTAPE 4a - Si erreurs de validation
+Controller → render('livre/create', ['errors' => $errors, 'old' => $_POST])
+User reçoit le formulaire avec messages d'erreur
+
+ÉTAPE 4b - Si validation OK - Transaction
+Controller → Database::beginTransaction()
+
+ÉTAPE 5 - Création de la ressource parente
+Controller → Livre::createRessource($_POST)
+Model → INSERT INTO ressource (type, titre, auteur_realisateur, annee, resume, image_url, pays)
+         VALUES ('livre', :titre, :auteur, :annee, :resume, :image, :pays)
+MySQL → Model: lastInsertId = 15
+Model → Controller: $ressourceId = 15
+
+ÉTAPE 6 - Création du livre spécifique
+Controller → Livre::createLivre($ressourceId, $_POST)
+Model → INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix)
+         VALUES (:id, :isbn, :editeur, :pages, :prix)
+
+ÉTAPE 7 - Association aux genres
+Controller → Livre::associateGenres($ressourceId, $_POST['genres'])
+Model → Pour chaque genre:
+         INSERT INTO ressource_genre (id_ressource, id_genre)
+         VALUES (:ressource, :genre)
+
+ÉTAPE 8 - Association aux thèmes
+Controller → Livre::associateThemes($ressourceId, $_POST['themes'])
+Model → Pour chaque thème:
+         INSERT INTO ressource_theme (id_ressource, id_theme)
+         VALUES (:ressource, :theme)
+
+ÉTAPE 9 - Validation transaction
+Controller → Database::commit()
+Controller → setFlash('success', 'Livre ajouté avec succès')
+Controller → redirect('index.php?controller=livre&action=index')
+
+ÉTAPE 10 - Affichage résultat
+User → Page liste livres avec message de succès
 ```
 
-## Sécurité
+---
+
+## SÉCURITÉ
 
 ### Protection SQL Injection
 
-**Méthode :** PDO avec prepared statements
+#### Méthode : PDO avec Prepared Statements
 
+Toutes les requêtes SQL utilisent des requêtes préparées avec paramètres liés.
+
+**Exemple CORRECT (sécurisé) :**
 ```php
-// ✅ BON
+// Utilisation de paramètres nommés
 $stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
 $stmt->execute(['email' => $email]);
+$user = $stmt->fetch();
 
-// ❌ MAUVAIS (vulnérable)
-$result = $pdo->query("SELECT * FROM utilisateur WHERE email = '$email'");
+// Utilisation de paramètres positionnels
+$stmt = $pdo->prepare("SELECT * FROM ressource WHERE id = ?");
+$stmt->execute([$id]);
+$ressource = $stmt->fetch();
+
+// Avec bindValue pour typage strict
+$stmt = $pdo->prepare("SELECT * FROM livre WHERE prix < :maxPrix");
+$stmt->bindValue(':maxPrix', $maxPrix, PDO::PARAM_STR);
+$stmt->execute();
 ```
 
-**Implémentation :** 100% des requêtes utilisent des prepared statements.
-
-### Protection XSS
-
-**Méthode :** Échappement avec `htmlspecialchars()`
-
+**Exemple INCORRECT (vulnérable) :**
 ```php
-// Dans toutes les vues
-<?= htmlspecialchars($ressource['titre'], ENT_QUOTES, 'UTF-8') ?>
+// NE JAMAIS FAIRE : Concaténation directe (SQL Injection possible)
+$result = $pdo->query("SELECT * FROM utilisateur WHERE email = '$email'");
+
+// NE JAMAIS FAIRE : Interpolation de variables
+$result = $pdo->query("SELECT * FROM ressource WHERE id = $id");
 ```
 
-**Implémentation :** Tous les affichages de données utilisateur sont échappés.
+**Implémentation :** 100% des requêtes SQL du projet utilisent des prepared statements.
+
+---
+
+### Protection XSS (Cross-Site Scripting)
+
+#### Méthode : Échappement avec htmlspecialchars()
+
+Toutes les données affichées provenant de la base de données ou des utilisateurs sont échappées.
+
+**Template standard :**
+```php
+<!-- Échappement de base -->
+<?= htmlspecialchars($ressource['titre'], ENT_QUOTES, 'UTF-8') ?>
+
+<!-- Avec valeur par défaut -->
+<?= htmlspecialchars($user['nom'] ?? 'Anonyme', ENT_QUOTES, 'UTF-8') ?>
+
+<!-- Pour attributs HTML -->
+<input type="text" value="<?= htmlspecialchars($oldValue, ENT_QUOTES, 'UTF-8') ?>">
+
+<!-- Pour URL -->
+<a href="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>">Lien</a>
+```
+
+**Exceptions :** Les données déjà validées et sûres (comme les constantes ou IDs numériques) peuvent être affichées directement.
+
+**Implémentation :** Tous les affichages de données dynamiques sont systématiquement échappés dans les vues.
+
+---
 
 ### Hachage des mots de passe
 
-**Méthode :** Bcrypt via `password_hash()` et `password_verify()`
+#### Méthode : Bcrypt via password_hash() et password_verify()
 
+Les mots de passe ne sont jamais stockés en clair dans la base de données.
+
+**Lors de l'inscription (Utilisateur::createUser()) :**
 ```php
-// Lors de l'inscription
-$hash = password_hash($password, PASSWORD_DEFAULT);
+// Génération du hash avec sel automatique
+$hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
 
-// Lors de la connexion
-if (password_verify($password, $hash)) {
-    // OK
+// Stockage dans la base
+$stmt = $pdo->prepare("INSERT INTO utilisateur (email, mot_de_passe) VALUES (:email, :password)");
+$stmt->execute([
+    'email' => $email,
+    'password' => $hashedPassword  // Hash stocké, jamais le mot de passe clair
+]);
+```
+
+**Lors de la connexion (Utilisateur::verifyCredentials()) :**
+```php
+// Récupération du hash depuis la base
+$stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
+$stmt->execute(['email' => $email]);
+$user = $stmt->fetch();
+
+// Vérification avec password_verify
+if ($user && password_verify($plainPassword, $user['mot_de_passe'])) {
+    // Authentification réussie
+    return $user;
+}
+
+return false; // Échec authentification
+```
+
+**Avantages de bcrypt :**
+- Résistant aux attaques par force brute (lent par conception)
+- Sel automatique et unique pour chaque mot de passe
+- Compatible avec les évolutions futures (PASSWORD_DEFAULT)
+- Standard de l'industrie
+
+---
+
+### Contrôle d'accès basé sur les rôles
+
+#### Méthode : Middleware Auth
+
+Les contrôleurs protégés vérifient les permissions dans leur constructeur ou au début des méthodes.
+
+**Exemple 1 : Protection niveau contrôleur (Admin) :**
+```php
+class AdminController extends Controller {
+
+    public function __construct() {
+        // Toutes les méthodes nécessitent le rôle administrateur
+        Auth::requireRole('administrateur');
+    }
+
+    public function index() {
+        // Code accessible uniquement aux administrateurs
+    }
 }
 ```
 
-### Contrôle d'accès
-
-**Middleware :** Classe `Auth`
-
+**Exemple 2 : Protection niveau méthode (Staff) :**
 ```php
-// Dans un contrôleur admin
-public function __construct() {
-    Auth::requireStaff(); // Redirige si non autorisé
+class LivreController extends Controller {
+
+    public function index() {
+        // Liste publique, pas de protection nécessaire
+    }
+
+    public function create() {
+        // Nécessite bibliothécaire ou administrateur
+        Auth::requireStaff();
+
+        // Code accessible uniquement au staff
+    }
+
+    public function store() {
+        // Nécessite bibliothécaire ou administrateur
+        Auth::requireStaff();
+
+        // Traitement du formulaire
+    }
 }
 ```
 
-## Base de données
+**Exemple 3 : Protection conditionnelle :**
+```php
+class EvaluationController extends Controller {
+
+    public function create() {
+        // Nécessite utilisateur connecté (n'importe quel rôle)
+        Auth::requireAuth();
+
+        $userId = Auth::user()['id_utilisateur'];
+        $ressourceId = $_POST['id_ressource'];
+
+        // Vérifier qu'il n'a pas déjà évalué
+        if ($this->hasAlreadyEvaluated($userId, $ressourceId)) {
+            $this->setFlash('error', 'Vous avez déjà évalué cette ressource');
+            $this->redirect("index.php?controller=ressource&action=show&id=$ressourceId");
+            return;
+        }
+
+        // Traitement de l'évaluation
+    }
+}
+```
+
+---
+
+## BASE DE DONNÉES
 
 ### Schéma relationnel
 
-**Tables principales :**
-- `utilisateur` (id, nom, prenom, email, mot_de_passe, role, date_inscription)
-- `ressource` (id, type, titre, auteur_realisateur, annee, resume, image_url, pays, date_ajout)
-- `livre` (id_ressource FK, isbn, editeur, nombre_pages, prix)
-- `film` (id_ressource FK, duree, support, langue, sous_titres)
-- `genre` (id, nom)
-- `theme` (id, nom)
-- `evaluation` (id, id_utilisateur FK, id_ressource FK, note, critique, date)
+#### Tables principales
 
-**Tables associatives :**
-- `ressource_genre` (id_ressource FK, id_genre FK)
-- `ressource_theme` (id_ressource FK, id_theme FK)
+| Table | Clé primaire | Description | Champs principaux |
+|-------|-------------|-------------|-------------------|
+| **utilisateur** | id_utilisateur | Comptes utilisateurs | nom, prenom, email, mot_de_passe, role, date_inscription |
+| **ressource** | id_ressource | Ressources génériques (parente) | type, titre, auteur_realisateur, annee, resume, image_url, pays, date_ajout |
+| **livre** | id_ressource (FK) | Livres (enfant de ressource) | isbn, editeur, nombre_pages, prix |
+| **film** | id_ressource (FK) | Films (enfant de ressource) | duree, support, langue, sous_titres |
+| **genre** | id_genre | Genres des ressources | nom |
+| **theme** | id_theme | Thèmes des ressources | nom |
+| **evaluation** | id_evaluation | Notes et critiques | id_utilisateur (FK), id_ressource (FK), note, critique, date_evaluation |
 
-**Pattern :** Table Inheritance (ressource → livre/film)
+#### Tables associatives (Many-to-Many)
 
-### Contraintes
+| Table | Clés | Description |
+|-------|------|-------------|
+| **ressource_genre** | (id_ressource, id_genre) | Association ressources ↔ genres |
+| **ressource_theme** | (id_ressource, id_theme) | Association ressources ↔ thèmes |
 
-- **Foreign Keys** : Toutes avec `ON DELETE CASCADE`
-- **Unique** : email (utilisateur), isbn (livre), (utilisateur, ressource) pour évaluation
-- **Indexes** : Sur type, titre, auteur, email, role, note
+#### Pattern d'héritage : Table Inheritance
 
-## Frontend
+```
+ressource (table parente)
+    ├── livre (table enfant, spécialisation)
+    └── film (table enfant, spécialisation)
+```
 
-### CSS (public/css/style.css)
+**Avantages :**
+- Partage des attributs communs (titre, auteur, annee)
+- Spécialisation des attributs spécifiques (isbn pour livre, duree pour film)
+- Requêtes simplifiées avec LEFT JOIN
 
-**Caractéristiques :**
-- 1309 lignes de CSS personnalisé
-- Variables CSS pour theming
-- Dark mode support
-- Design responsive
-- Grid layout
-- Animations fluides
-- Design de Noël avec flocons animés
+---
 
-### JavaScript (public/js/)
+### Contraintes d'intégrité
 
-**Actuellement :**
-- Dark mode toggle (inline)
-- Character counter pour critiques (inline)
-- localStorage pour préférences
+#### Foreign Keys (Clés étrangères)
 
-**À développer :**
-- Validation formulaires côté client
-- AJAX pour recherche dynamique
-- Upload d'images
+| Table | Colonne | Référence | On Delete |
+|-------|---------|-----------|-----------|
+| livre | id_ressource | ressource(id_ressource) | CASCADE |
+| film | id_ressource | ressource(id_ressource) | CASCADE |
+| evaluation | id_utilisateur | utilisateur(id_utilisateur) | CASCADE |
+| evaluation | id_ressource | ressource(id_ressource) | CASCADE |
+| ressource_genre | id_ressource | ressource(id_ressource) | CASCADE |
+| ressource_genre | id_genre | genre(id_genre) | CASCADE |
+| ressource_theme | id_ressource | ressource(id_ressource) | CASCADE |
+| ressource_theme | id_theme | theme(id_theme) | CASCADE |
 
-### Images (public/img/)
+**Comportement CASCADE :**
+- Suppression d'une ressource → suppression automatique des évaluations, associations genres/thèmes, et données livre/film
+- Suppression d'un utilisateur → suppression automatique de ses évaluations
+- Suppression d'un genre/thème → suppression automatique des associations
 
-**Structure :**
-- `livres/` : Couvertures de livres
-- `films/` : Affiches de films
-- `placeholders/` : Images par défaut
+#### Contraintes UNIQUE
 
-## Performance
+| Table | Colonnes | Raison |
+|-------|----------|--------|
+| utilisateur | email | Un email par compte |
+| livre | isbn | Un ISBN unique par livre |
+| evaluation | (id_utilisateur, id_ressource) | Un seul avis par utilisateur par ressource |
+| genre | nom | Pas de doublons de genres |
+| theme | nom | Pas de doublons de thèmes |
+
+#### Indexes pour performance
+
+| Table | Colonnes indexées | Raison |
+|-------|------------------|--------|
+| ressource | type | Filtrage fréquent livre/film |
+| ressource | titre | Recherche par titre |
+| ressource | auteur_realisateur | Recherche par auteur |
+| ressource | date_ajout | Tri pour nouveautés |
+| utilisateur | email | Recherche lors de l'authentification |
+| utilisateur | role | Filtrage par rôle |
+| evaluation | note | Calcul moyennes et tri |
+| evaluation | id_ressource | Récupération évaluations par ressource |
+| livre | isbn | Recherche par ISBN |
+
+---
+
+## FRONTEND
+
+### Architecture CSS
+
+Le projet utilise du CSS personnalisé avec variables CSS pour un theming cohérent.
+
+#### Organisation du style
+
+| Fichier | Contenu |
+|---------|---------|
+| **public/css/style.css** | CSS principal complet |
+
+#### Caractéristiques principales
+
+- **Variables CSS** : Couleurs, espacements, breakpoints centralisés
+- **Dark mode** : Support du mode sombre avec switch utilisateur
+- **Design responsive** : Mobile first avec breakpoints adaptés
+- **Grid layout** : Mise en page moderne avec CSS Grid et Flexbox
+- **Animations fluides** : Transitions et transformations CSS
+- **Thème saisonnier** : Flocons de neige animés (Noël)
+
+#### Variables CSS (extrait)
+
+```css
+:root {
+    /* Couleurs principales */
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+
+    /* Espacements */
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+
+    /* Breakpoints */
+    --mobile: 768px;
+    --tablet: 1024px;
+}
+```
+
+---
+
+### JavaScript
+
+#### Fonctionnalités actuelles
+
+| Fonctionnalité | Emplacement | Description |
+|---------------|-------------|-------------|
+| **Dark mode toggle** | Inline dans header | Bascule entre mode clair/sombre |
+| **Character counter** | Inline dans formulaires | Compteur de caractères pour critiques (limite 1000) |
+| **LocalStorage** | Navigation | Sauvegarde des préférences utilisateur |
+
+#### Fonctionnalités à développer (extensibilité)
+
+- Validation formulaires côté client (avant soumission)
+- Recherche dynamique avec AJAX (suggestions en temps réel)
+- Upload d'images avec prévisualisation
+- Système de filtres interactifs
+- Infinite scroll pour pagination
+
+---
+
+### Images et médias
+
+#### Structure du dossier public/img/
+
+```
+public/img/
+├── livres/              # Couvertures de livres
+│   ├── Dune.jpg
+│   ├── 1984.jpg
+│   └── ...
+├── films/               # Affiches de films
+│   ├── Inception.jpg
+│   ├── Matrix.png
+│   └── ...
+└── placeholders/        # Images par défaut
+    ├── livre-default.png
+    └── film-default.png
+```
+
+#### Gestion des images
+
+- **Naming convention** : Nom du titre (sans espaces spéciaux)
+- **Formats supportés** : JPG, PNG, WebP
+- **Fallback** : Image placeholder si image manquante
+- **Optimisation** : À implémenter (compression, lazy loading)
+
+---
+
+## PERFORMANCE
 
 ### Optimisations actuelles
-- Une seule connexion DB (Singleton)
-- Prepared statements (cache côté MySQL)
-- Indexes sur colonnes fréquemment requêtées
-- CSS minifié en production
 
-### Optimisations futures
-- Cache Redis pour sessions
-- Cache de requêtes (Memcached)
-- CDN pour assets statiques
-- Lazy loading des images
-- Pagination des résultats
+| Optimisation | Implémentation | Impact |
+|--------------|---------------|--------|
+| **Singleton DB** | Une seule instance PDO | Réduit overhead connexion |
+| **Prepared statements** | Cache MySQL côté serveur | Accélère requêtes répétées |
+| **Indexes SQL** | Sur colonnes fréquentes | Accélère recherches et tri |
+| **CSS inline critique** | À implémenter | Améliorerait First Paint |
 
-## Extensibilité
+### Optimisations futures recommandées
+
+| Optimisation | Priorité | Bénéfice estimé |
+|--------------|----------|-----------------|
+| **Cache Redis** | Haute | Sessions distribuées, cache requêtes |
+| **CDN pour assets** | Moyenne | Réduction latence ressources statiques |
+| **Lazy loading images** | Haute | Réduction temps chargement initial |
+| **Pagination** | Haute | Performance listes longues |
+| **Minification CSS/JS** | Moyenne | Réduction taille fichiers |
+| **Compression Gzip** | Haute | Réduction bande passante |
+| **Cache de vues** | Moyenne | Réduction génération HTML |
+
+---
+
+## EXTENSIBILITÉ
 
 ### Ajouter un nouveau type de ressource
 
-1. Créer la table SQL (héritant de `ressource`)
-2. Créer le modèle (`app/models/NouveauType.php`)
-3. Créer le contrôleur (`app/controllers/NouveauTypeController.php`)
-4. Créer les vues (`app/views/nouveau-type/`)
-5. Ajouter les routes dans le Router
+Exemple : Ajouter un type "Bande dessinée"
+
+**Étape 1 - Base de données :**
+```sql
+CREATE TABLE bande_dessinee (
+    id_ressource INT PRIMARY KEY,
+    illustrateur VARCHAR(255),
+    serie VARCHAR(255),
+    tome INT,
+    FOREIGN KEY (id_ressource) REFERENCES ressource(id_ressource) ON DELETE CASCADE
+);
+```
+
+**Étape 2 - Modèle :**
+```php
+// app/models/BandeDessinee.php
+class BandeDessinee extends Model {
+    protected $table = 'bande_dessinee';
+
+    public function create($data) {
+        // Logique création BD
+    }
+
+    // Autres méthodes CRUD
+}
+```
+
+**Étape 3 - Contrôleur :**
+```php
+// app/controllers/BandeDessineeController.php
+class BandeDessineeController extends Controller {
+    public function index() {
+        // Liste des BDs
+    }
+
+    public function create() {
+        Auth::requireStaff();
+        // Formulaire création
+    }
+
+    // Autres actions CRUD
+}
+```
+
+**Étape 4 - Vues :**
+```
+app/views/bande-dessinee/
+├── index.php
+├── create.php
+└── edit.php
+```
+
+**Étape 5 - Navigation :**
+Ajouter les liens dans le menu d'administration (partials/header.php)
+
+---
 
 ### Ajouter une fonctionnalité
 
-1. Déterminer le contrôleur concerné
-2. Ajouter la méthode au contrôleur
-3. Ajouter les méthodes nécessaires au(x) modèle(s)
-4. Créer la vue correspondante
-5. Ajouter le lien dans la navigation
+Exemple : Ajouter un système de favoris
 
-## Conclusion
+**Étape 1 - Analyse :**
+- Quel contrôleur ? `FavoriController` (nouveau) ou `RessourceController` (existant)
+- Quels modèles ? `Utilisateur` (ajout méthode), nouveau `Favori`
+- Quelle table ? `favori` (id_utilisateur, id_ressource, date_ajout)
 
-L'architecture E-Library est :
-- ✅ **Modulaire** : Séparation claire des responsabilités
-- ✅ **Sécurisée** : Protection contre les attaques courantes
-- ✅ **Maintenable** : Code organisé et documenté
-- ✅ **Extensible** : Facile d'ajouter de nouvelles fonctionnalités
-- ✅ **Standard** : Suit les conventions PHP et MVC
+**Étape 2 - Base de données :**
+```sql
+CREATE TABLE favori (
+    id_utilisateur INT NOT NULL,
+    id_ressource INT NOT NULL,
+    date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_utilisateur, id_ressource),
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE,
+    FOREIGN KEY (id_ressource) REFERENCES ressource(id_ressource) ON DELETE CASCADE
+);
+```
 
-Pour plus de détails, consulter les diagrammes UML dans [`documentation/diagrammes/`](diagrammes/).
+**Étape 3 - Modèle :**
+```php
+// app/models/Favori.php
+class Favori extends Model {
+    public function toggle($userId, $ressourceId) {
+        // Ajouter ou retirer des favoris
+    }
+
+    public function getByUser($userId) {
+        // Récupérer les favoris d'un utilisateur
+    }
+}
+```
+
+**Étape 4 - Contrôleur :**
+```php
+// app/controllers/FavoriController.php
+class FavoriController extends Controller {
+    public function toggle() {
+        Auth::requireAuth();
+        // Logique toggle favori (AJAX)
+    }
+
+    public function index() {
+        Auth::requireAuth();
+        // Afficher mes favoris
+    }
+}
+```
+
+**Étape 5 - Vue :**
+Ajouter bouton favori dans `ressource/show.php`
+
+**Étape 6 - Navigation :**
+Ajouter lien "Mes favoris" dans le menu utilisateur
+
+---
+
+## CONCLUSION
+
+### Forces de l'architecture E-Library
+
+| Aspect | Description |
+|--------|-------------|
+| **Modulaire** | Séparation claire des responsabilités (MVC) |
+| **Sécurisée** | Protection contre SQL Injection, XSS, mots de passe hashés |
+| **Maintenable** | Code organisé, commenté, conventions respectées |
+| **Extensible** | Facile d'ajouter de nouvelles fonctionnalités |
+| **Standard** | Suit les conventions PHP et les bonnes pratiques MVC |
+| **Scalable** | Architecture permettant la montée en charge (avec optimisations) |
+
+### Technologies utilisées
+
+| Couche | Technologie | Version |
+|--------|------------|---------|
+| **Backend** | PHP | >= 7.4 |
+| **Base de données** | MySQL | >= 5.7 |
+| **Driver DB** | PDO | Natif PHP |
+| **Frontend** | HTML5 + CSS3 + JS Vanilla | Standard |
+| **Architecture** | MVC | Pattern |
+| **Serveur** | Apache / Nginx | Compatible |
+
+---
+
+## DOCUMENTATION COMPLÉMENTAIRE
+
+Pour plus de détails techniques, consulter :
+
+- **Diagrammes UML** : `documentation/diagrammes/`
+- **Schéma base de données** : `sql/schema.sql`
+- **Données de test** : `sql/data.sql`
+- **Guide sécurité** : `documentation/SECURITY.md`
+- **README installation** : `README.md`
+
+---
+
+**Version** : 1.0
+**Dernière mise à jour** : Janvier 2025
+**Projet** : SAE R307 - Médiathèque Numérique
