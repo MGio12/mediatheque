@@ -1,264 +1,624 @@
-# E-Library - Médiathèque Numérique
+# E-LIBRARY - MÉDIATHÈQUE NUMÉRIQUE
 
-## Présentation
+## PRÉSENTATION
 
-E-Library est une application web de gestion de médiathèque permettant la gestion et la consultation de ressources numériques (livres, films). Développé dans le cadre du projet SAE R307, ce système offre une interface complète pour les visiteurs, utilisateurs et le personnel administratif.
+E-Library est une application web de gestion de médiathèque permettant la consultation, la recherche et l'évaluation de ressources numériques (livres et films). Développée dans le cadre du projet SAE R307, cette application offre une interface complète pour les visiteurs, utilisateurs et le personnel administratif.
 
-## Fonctionnalités
+---
 
-### Front Office
+## FONCTIONNALITÉS
 
-**Consultation publique**
-- Catalogue complet des ressources disponibles
-- Recherche multicritère (titre, auteur, genre, thème, année)
-- Affichage des nouveautés
-- Classement des ressources les mieux notées
-- Sélections thématiques
-- Consultation détaillée des ressources
+### Front Office (Espace Public)
 
-**Espace utilisateur**
-- Inscription et authentification sécurisée
-- Évaluation des ressources (notation 0-5 étoiles)
-- Rédaction de critiques
-- Gestion du profil personnel
+#### Consultation publique
 
-### Back Office
+| Fonctionnalité | Description |
+|---------------|-------------|
+| **Catalogue complet** | Affichage de toutes les ressources disponibles avec notes et évaluations |
+| **Nouveautés** | Dernières ressources ajoutées triées par date |
+| **Top** | Ressources les mieux notées par la communauté |
+| **Sélections thématiques** | Filtrage des ressources par thème (Science-Fiction, Histoire, etc.) |
+| **Recherche avancée** | Recherche multicritère (titre, auteur, genre, thème, plage d'années) |
+| **Détails ressource** | Page complète avec résumé, évaluations, casting, informations techniques |
 
-**Administration (Bibliothécaires et Administrateurs)**
-- Gestion complète des livres (création, modification, suppression)
-- Gestion complète des films (création, modification, suppression)
-- Gestion des genres et thèmes
-- Consultation des statistiques
+#### Espace utilisateur connecté
 
-## Architecture technique
+| Fonctionnalité | Description |
+|---------------|-------------|
+| **Inscription** | Création de compte avec validation |
+| **Authentification** | Connexion sécurisée avec mots de passe hashés (bcrypt) |
+| **Évaluation** | Notation de 1 à 5 étoiles des ressources consultées |
+| **Critiques** | Rédaction de commentaires (max 1000 caractères) |
+| **Profil** | Gestion du compte personnel |
 
-### Technologies
+### Back Office (Administration)
 
-- **Backend** : PHP 8.0+ (Programmation Orientée Objet)
-- **Base de données** : MySQL 8.0+
-- **Frontend** : HTML5, CSS3, JavaScript
-- **Pattern** : MVC (Model-View-Controller)
-- **Accès données** : PDO avec requêtes préparées
+#### Bibliothécaire
+
+| Permission | Description |
+|-----------|-------------|
+| **Gestion livres** | Création, modification, suppression de livres |
+| **Gestion films** | Création, modification, suppression de films |
+| **Association** | Liaison des ressources aux genres et thèmes existants |
+
+#### Administrateur
+
+| Permission | Description |
+|-----------|-------------|
+| **Toutes permissions bibliothécaire** | Gestion complète des ressources |
+| **Gestion genres** | CRUD complet sur les genres |
+| **Gestion thèmes** | CRUD complet sur les thèmes |
+| **Gestion utilisateurs** | Administration des comptes et rôles |
+
+---
+
+## ARCHITECTURE TECHNIQUE
+
+### Stack technologique
+
+| Couche | Technologie | Version minimale |
+|--------|-------------|------------------|
+| **Backend** | PHP (Programmation Orientée Objet) | 7.4+ |
+| **Base de données** | MySQL | 5.7+ |
+| **Frontend** | HTML5, CSS3, JavaScript Vanilla | Standard |
+| **Pattern architectural** | MVC (Model-View-Controller) | - |
+| **Accès données** | PDO avec requêtes préparées | Natif PHP |
+| **Serveur web** | Apache ou Nginx | Compatible |
 
 ### Structure du projet
 
 ```
 mediatheque/
 ├── app/
-│   ├── controllers/     Contrôleurs MVC
-│   ├── models/          Modèles métier
-│   └── views/           Vues et templates
-├── config/              Configuration
-├── core/                Framework MVC
-├── documentation/       Documentation et diagrammes UML
-├── public/              Assets (CSS, JS, images)
-├── sql/                 Scripts SQL
-└── index.php            Point d'entrée
+│   ├── controllers/     # Contrôleurs MVC
+│   │   ├── AdminController.php
+│   │   ├── AuthController.php
+│   │   ├── CatalogueController.php
+│   │   ├── EvaluationController.php
+│   │   ├── FilmController.php
+│   │   ├── GenreController.php
+│   │   ├── HomeController.php
+│   │   ├── LivreController.php
+│   │   ├── RessourceController.php
+│   │   └── ThemeController.php
+│   ├── models/          # Modèles métier
+│   │   ├── Evaluation.php
+│   │   ├── Film.php
+│   │   ├── Genre.php
+│   │   ├── Livre.php
+│   │   ├── Ressource.php
+│   │   ├── Theme.php
+│   │   └── Utilisateur.php
+│   └── views/           # Vues et templates
+│       ├── layout.php
+│       ├── partials/
+│       ├── home/
+│       ├── auth/
+│       ├── catalogue/
+│       ├── ressource/
+│       └── admin/
+├── config/              # Configuration
+│   └── config.php
+├── core/                # Framework MVC
+│   ├── Auth.php
+│   ├── Controller.php
+│   ├── Database.php
+│   ├── Model.php
+│   └── Router.php
+├── documentation/       # Documentation et diagrammes UML
+│   ├── ARCHITECTURE.md
+│   ├── Cahier_des_charges.md
+│   ├── SECURITY.md
+│   └── diagrammes/
+├── public/              # Assets publics
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   └── img/
+│       ├── films/
+│       └── livres/
+├── sql/                 # Scripts SQL
+│   ├── schema.sql
+│   └── data.sql
+└── index.php            # Point d'entrée unique
 ```
 
-## Installation
+---
+
+## INSTALLATION
 
 ### Prérequis
 
-- PHP >= 8.0
-- MySQL >= 8.0 ou MariaDB >= 10.5
-- Serveur web (Apache, Nginx) ou PHP built-in server
+| Logiciel | Version minimale | Notes |
+|----------|-----------------|-------|
+| **PHP** | 7.4+ | Extensions : PDO, PDO_MySQL |
+| **MySQL** | 5.7+ | Ou MariaDB 10.5+ |
+| **Serveur web** | Apache 2.4+ ou Nginx 1.18+ | Ou PHP built-in server pour dev |
 
 ### Procédure d'installation
 
-1. Cloner le dépôt
+#### Étape 1 : Cloner le dépôt
+
 ```bash
 git clone https://github.com/votre-equipe/mediatheque.git
 cd mediatheque
 ```
 
-2. Créer la base de données
+#### Étape 2 : Créer la base de données
+
 ```bash
 mysql -u root -p
 ```
+
+Dans l'invite MySQL :
 ```sql
 CREATE DATABASE gm401942_elibrary2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 EXIT;
 ```
 
-3. Importer le schéma
+#### Étape 3 : Importer le schéma
+
 ```bash
 mysql -u root -p gm401942_elibrary2 < sql/schema.sql
 ```
 
-4. Importer les données de test (optionnel)
+Cette commande crée toutes les tables nécessaires :
+- utilisateur
+- ressource (table parente)
+- livre et film (tables enfants)
+- genre et theme
+- evaluation
+- Tables associatives (ressource_genre, ressource_theme)
+
+#### Étape 4 : Importer les données de test (optionnel mais recommandé)
+
 ```bash
 mysql -u root -p gm401942_elibrary2 < sql/data.sql
 ```
 
-Ou utiliser le script de seeding :
-```bash
-php seed.php
+Ce fichier contient :
+- 3 utilisateurs de test (admin, bibliothécaire, utilisateur)
+- 5 livres (Dune, 1984, Le Petit Prince, Les Misérables, Sapiens)
+- 5 films (Inception, Le Parrain, Interstellar, Le Roi Lion, Matrix)
+- Genres et thèmes associés
+
+#### Étape 5 : Configurer la connexion à la base de données
+
+Le fichier `config/config.php` détecte automatiquement l'environnement.
+
+**Pour le développement local (MAMP/XAMPP) :**
+```php
+// Détection automatique - pas de modification nécessaire
+// Port 8889 (MAMP) ou 3306 (standard) détecté automatiquement
 ```
 
-5. Configurer les paramètres de connexion
-
-Le fichier `config/config.php` détecte automatiquement l'environnement :
-
-**Développement local (MAMP)** :
+**Configuration automatique :**
 - Host : `localhost`
-- Port : `8889`
+- Port : `8889` (MAMP) ou `3306` (standard)
 - Base : `gm401942_elibrary2`
 - User : `gm401942`
 - Password : `gm401942`
 
-**Production (serveur IUT)** :
-- Host : `localhost`
-- Port : `3306`
-- Base : `gm401942_elibrary2`
-- User : `gm401942`
-- Password : à configurer dans `config/config.php`
+**Pour la production (serveur IUT) :**
 
-6. Démarrer le serveur
+Modifier uniquement si nécessaire dans `config/config.php` :
+```php
+define('DB_HOST', 'localhost');
+define('DB_PORT', '3306');
+define('DB_NAME', 'gm401942_elibrary2');
+define('DB_USER', 'gm401942');
+define('DB_PASSWORD', 'votre_mot_de_passe_production');
+```
 
-Pour le développement :
+#### Étape 6 : Démarrer le serveur
+
+**Option A : Serveur PHP intégré (développement)**
 ```bash
 php -S localhost:8000
 ```
 
-Pour Apache/Nginx, configurer le DocumentRoot vers le dossier du projet.
+**Option B : Apache/Nginx**
 
-7. Accéder à l'application
+Configurer le DocumentRoot vers le dossier du projet :
+```apache
+<VirtualHost *:80>
+    ServerName mediatheque.local
+    DocumentRoot "/path/to/mediatheque"
+    <Directory "/path/to/mediatheque">
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
 
-Ouvrir : `http://localhost:8000`
+**Option C : MAMP/XAMPP**
 
-## Comptes de test
+Placer le projet dans le dossier `htdocs` et accéder via `http://localhost/mediatheque`
 
-Après importation du fichier `sql/data.sql` :
+#### Étape 7 : Accéder à l'application
 
-| Rôle            | Email                    | Mot de passe |
-|-----------------|--------------------------|--------------|
-| Administrateur  | admin@mediatheque.com    | password     |
-| Bibliothécaire  | biblio@mediatheque.com   | password     |
-| Utilisateur     | user@mediatheque.com     | password     |
+Ouvrir dans le navigateur :
+- Serveur PHP : `http://localhost:8000`
+- Apache/Nginx : `http://mediatheque.local` ou `http://localhost/mediatheque`
 
-Note : Les mots de passe sont hachés avec bcrypt dans la base de données.
+---
 
-## Documentation
+## COMPTES DE TEST
 
-La documentation complète se trouve dans le dossier `documentation/` :
+Après importation du fichier `sql/data.sql`, les comptes suivants sont disponibles :
 
-- **ARCHITECTURE.md** : Architecture détaillée du système
-- **INSTALLATION.md** : Guide d'installation complet
-- **diagrammes/** : Diagrammes UML au format PlantUML
+| Rôle | Email | Mot de passe | Permissions |
+|------|-------|--------------|-------------|
+| **Administrateur** | admin@mediatheque.com | password123 | Accès complet (ressources, genres, thèmes, utilisateurs) |
+| **Bibliothécaire** | biblio@mediatheque.com | password123 | Gestion des ressources (livres, films) |
+| **Utilisateur** | user@mediatheque.com | password123 | Consultation et évaluation |
+
+**Note de sécurité :** Les mots de passe sont stockés hashés avec bcrypt dans la base de données. Le mot de passe en clair `password123` est uniquement utilisé pour la connexion.
+
+---
+
+## DOCUMENTATION COMPLÈTE
+
+### Fichiers de documentation
+
+La documentation technique complète se trouve dans le dossier `documentation/` :
+
+| Document | Contenu |
+|----------|---------|
+| **ARCHITECTURE.md** | Architecture détaillée du système (MVC, flux de données, sécurité) |
+| **Cahier_des_charges.md** | Spécifications fonctionnelles et techniques du projet |
+| **SECURITY.md** | Mesures de sécurité implémentées et recommandations |
 
 ### Diagrammes UML
 
-Les diagrammes suivants sont disponibles au format PlantUML :
+Tous les diagrammes sont au format PlantUML dans `documentation/diagrammes/` :
 
-**Cas d'utilisation**
-- `01a-use-case-front.puml` : Front Office
-- `01b-use-case-back.puml` : Back Office
+#### Diagrammes de cas d'utilisation
 
-**Classes**
-- `02a-class-core.puml` : Framework (Controller, Model, Router, Auth, Database)
-- `02b-class-models.puml` : Modèles métier
-- `02c-class-controllers.puml` : Contrôleurs
+| Fichier | Description |
+|---------|-------------|
+| `01a-use-case-front.puml` | Cas d'utilisation Front Office (visiteur, utilisateur) |
+| `01b-use-case-back.puml` | Cas d'utilisation Back Office (bibliothécaire, admin) |
 
-**Séquence**
-- `03-sequence-authentification.puml` : Processus d'authentification
-- `04-sequence-evaluation.puml` : Évaluation d'une ressource
-- `05-sequence-crud-livre.puml` : Création d'un livre
+#### Diagrammes de classes
 
-**Structure**
-- `06-component-diagram.puml` : Architecture en composants
-- `07-package-diagram.puml` : Organisation du code
-- `08-mcd.puml` : Modèle Conceptuel de Données
-- `09-mld.puml` : Modèle Logique de Données
+| Fichier | Description |
+|---------|-------------|
+| `02a-class-core.puml` | Framework core (Controller, Model, Router, Auth, Database) |
+| `02b-class-models.puml` | Modèles métier (Utilisateur, Ressource, Livre, Film, etc.) |
+| `02c-class-controllers.puml` | Contrôleurs de l'application |
+
+#### Diagrammes de séquence
+
+| Fichier | Description |
+|---------|-------------|
+| `03-sequence-authentification.puml` | Processus complet d'authentification |
+| `04-sequence-evaluation.puml` | Création d'une évaluation |
+| `05-sequence-crud-livre.puml` | Création d'un livre (workflow complet) |
+
+#### Diagrammes structurels
+
+| Fichier | Description |
+|---------|-------------|
+| `06-component-diagram.puml` | Architecture en composants |
+| `07-package-diagram.puml` | Organisation du code en packages |
+| `08-mcd.puml` | Modèle Conceptuel de Données |
+| `09-mld.puml` | Modèle Logique de Données |
 
 ### Visualisation des diagrammes
 
-**VS Code**
-- Installer l'extension "PlantUML"
-- Ouvrir un fichier `.puml`
-- Utiliser Alt+D pour prévisualiser
+#### VS Code (recommandé)
 
-**En ligne**
-- Accéder à https://www.plantuml.com/plantuml/uml/
-- Copier-coller le contenu du fichier `.puml`
+1. Installer l'extension **PlantUML**
+2. Ouvrir un fichier `.puml`
+3. Utiliser `Alt+D` pour prévisualiser
 
-**Génération d'images**
+#### En ligne
+
+1. Accéder à https://www.plantuml.com/plantuml/uml/
+2. Copier-coller le contenu du fichier `.puml`
+
+#### Génération d'images PNG/SVG
+
 ```bash
 cd documentation/diagrammes
 plantuml *.puml
+# Génère les fichiers PNG dans le même dossier
 ```
 
-## Sécurité
+---
+
+## SÉCURITÉ
 
 ### Mesures implémentées
 
-- **Protection SQL Injection** : Utilisation systématique de PDO avec requêtes préparées
-- **Protection XSS** : Échappement des données avec `htmlspecialchars()`
-- **Mots de passe** : Hachage sécurisé avec `password_hash()` (bcrypt)
-- **Sessions** : Gestion sécurisée de l'authentification
+| Protection | Implémentation | Fichier concerné |
+|-----------|---------------|------------------|
+| **SQL Injection** | 100% des requêtes utilisent PDO avec prepared statements | Tous les modèles (app/models/) |
+| **XSS** | Échappement systématique avec `htmlspecialchars()` | Toutes les vues (app/views/) |
+| **Mots de passe** | Hashage bcrypt via `password_hash()` | Utilisateur.php |
+| **Sessions** | Gestion sécurisée de l'authentification | core/Auth.php |
+| **Contrôle d'accès** | Vérification des rôles avant actions sensibles | Controllers avec Auth::require* |
+| **Validation** | Validation des entrées côté serveur | Tous les modèles |
+
+### Exemple de protection SQL Injection
+
+**Code sécurisé (utilisé partout) :**
+```php
+$stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
+$stmt->execute(['email' => $email]);
+```
+
+**Code vulnérable (JAMAIS utilisé) :**
+```php
+$query = "SELECT * FROM utilisateur WHERE email = '$email'"; // DANGER
+```
 
 ### Recommandations pour la production
 
-- Implémenter des tokens CSRF pour les formulaires
-- Mettre en place un rate limiting sur les tentatives de connexion
-- Forcer l'utilisation de HTTPS
-- Utiliser des variables d'environnement pour les credentials
-- Configurer les en-têtes de sécurité HTTP
+| Recommandation | Priorité | Implémentation suggérée |
+|---------------|----------|------------------------|
+| Tokens CSRF | Haute | Ajouter tokens dans tous les formulaires POST |
+| Rate limiting | Haute | Limiter tentatives de connexion (5/min) |
+| HTTPS obligatoire | Critique | Forcer redirection HTTP → HTTPS |
+| Variables d'environnement | Haute | Utiliser .env pour credentials |
+| En-têtes de sécurité | Moyenne | X-Frame-Options, CSP, etc. |
+| Logs de sécurité | Moyenne | Logger tentatives de connexion échouées |
+| Backup automatique | Haute | Sauvegardes quotidiennes de la BDD |
 
-## Base de données
+---
 
-### Tables principales
+## BASE DE DONNÉES
 
-- **utilisateur** : Comptes utilisateurs (visiteur, bibliothécaire, administrateur)
-- **ressource** : Table parent pour livres et films
-- **livre** : Informations spécifiques aux livres
-- **film** : Informations spécifiques aux films
-- **genre** : Genres des ressources
-- **theme** : Thèmes des ressources
-- **evaluation** : Notes et critiques des utilisateurs
-- **ressource_genre** : Association ressources-genres (N:N)
-- **ressource_theme** : Association ressources-thèmes (N:N)
+### Schéma relationnel
 
-Voir `sql/schema.sql` pour la structure complète.
+#### Tables principales
 
-## Développement
+| Table | Clé primaire | Description |
+|-------|-------------|-------------|
+| **utilisateur** | id_utilisateur | Comptes utilisateurs (visiteur, bibliothécaire, admin) |
+| **ressource** | id_ressource | Table parente pour toutes les ressources |
+| **livre** | id_ressource (FK) | Informations spécifiques aux livres (ISBN, éditeur, pages, prix) |
+| **film** | id_ressource (FK) | Informations spécifiques aux films (durée, support, langue, sous-titres) |
+| **genre** | id_genre | Genres des ressources (Action, Roman, Comédie, etc.) |
+| **theme** | id_theme | Thèmes des ressources (Science-Fiction, Histoire, etc.) |
+| **evaluation** | id_evaluation | Notes (1-5) et critiques des utilisateurs |
+
+#### Tables associatives (Many-to-Many)
+
+| Table | Clés | Relation |
+|-------|------|----------|
+| **ressource_genre** | (id_ressource, id_genre) | Une ressource peut avoir plusieurs genres |
+| **ressource_theme** | (id_ressource, id_theme) | Une ressource peut avoir plusieurs thèmes |
+
+#### Pattern Table Inheritance
+
+```
+ressource (parente)
+    ├── livre (enfant avec spécialisation)
+    └── film (enfant avec spécialisation)
+```
+
+**Avantages :**
+- Évite la duplication des champs communs (titre, auteur, année, résumé, etc.)
+- Permet les requêtes unifiées sur toutes les ressources
+- Facilite l'ajout de nouveaux types de ressources
+
+### Contraintes d'intégrité
+
+| Contrainte | Description |
+|-----------|-------------|
+| **Foreign Keys** | Toutes avec `ON DELETE CASCADE` pour cohérence référentielle |
+| **UNIQUE** | email (utilisateur), isbn (livre), (utilisateur, ressource) pour évaluation |
+| **NOT NULL** | Champs obligatoires validés en base |
+| **ENUM** | Types contraints (type ressource, rôle utilisateur, support film) |
+
+Voir `sql/schema.sql` pour la structure SQL complète.
+
+---
+
+## DÉVELOPPEMENT
 
 ### Conventions de code
 
-- Respect du standard PSR-12 pour PHP
-- camelCase pour les variables et méthodes
-- PascalCase pour les noms de classes
-- snake_case pour les colonnes SQL
+| Aspect | Convention | Exemple |
+|--------|-----------|---------|
+| **Classes** | PascalCase | `RessourceController`, `Utilisateur` |
+| **Méthodes** | camelCase | `getTopRated()`, `findById()` |
+| **Variables** | camelCase | `$ressourceModel`, `$userId` |
+| **Colonnes SQL** | snake_case | `id_utilisateur`, `date_ajout` |
+| **Constantes** | SCREAMING_SNAKE_CASE | `DB_HOST`, `PASSWORD_DEFAULT` |
+| **Fichiers** | PascalCase.php | `CatalogueController.php` |
 
 ### Architecture MVC
 
-**Controllers**
-- Gèrent les requêtes HTTP
-- Héritent de la classe `Controller`
-- Appellent les modèles
-- Rendent les vues
+#### Controllers (app/controllers/)
 
-**Models**
-- Gèrent l'accès aux données
-- Héritent de la classe `Model`
-- Utilisent PDO pour les requêtes
-- Valident les données
+**Responsabilités :**
+- Recevoir les requêtes HTTP (GET, POST)
+- Vérifier les autorisations (Auth)
+- Appeler les modèles pour récupérer/modifier les données
+- Passer les données aux vues
+- Gérer les redirections
 
-**Views**
-- Affichent les données
-- Utilisent le layout principal
-- Échappent les variables pour la sécurité
+**Méthodes héritées de `core/Controller.php` :**
+```php
+$this->render($view, $data);           // Afficher une vue
+$this->redirect($url);                 // Rediriger
+$this->setFlash($type, $message);      // Message flash
+```
 
-## Référence du projet
+#### Models (app/models/)
 
-**Cadre** : SAE R307 - Année 2025/2026
+**Responsabilités :**
+- Interagir avec la base de données via PDO
+- Valider les données entrantes
+- Appliquer la logique métier
+- Construire les requêtes SQL préparées
 
-**Inspiration** : https://vod.mediatheque-numerique.com
+**Propriétés héritées de `core/Model.php` :**
+```php
+$this->pdo;    // Instance PDO pour requêtes
+$this->table;  // Nom de la table (défini dans enfant)
+```
 
-**Enseignant** : thanh-phuong.nguyen@univcotedazur.fr
+#### Views (app/views/)
 
-**Institution** : IUT Nice Côte d'Azur
+**Responsabilités :**
+- Générer le HTML à partir des données
+- Échapper TOUTES les variables avec `htmlspecialchars()`
+- Utiliser le layout principal (`layout.php`)
+- Fournir une interface utilisateur claire
 
-## Notes importantes
+**Template standard :**
+```php
+<?= htmlspecialchars($ressource['titre'], ENT_QUOTES, 'UTF-8') ?>
+```
 
-Ce projet a été développé dans un cadre pédagogique. Certaines fonctionnalités de sécurité doivent être renforcées avant un déploiement en production.
+### Ajouter une fonctionnalité
+
+#### Exemple : Ajouter un système de favoris
+
+**1. Base de données :**
+```sql
+CREATE TABLE favori (
+    id_utilisateur INT NOT NULL,
+    id_ressource INT NOT NULL,
+    date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_utilisateur, id_ressource),
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE,
+    FOREIGN KEY (id_ressource) REFERENCES ressource(id_ressource) ON DELETE CASCADE
+);
+```
+
+**2. Modèle (app/models/Favori.php) :**
+```php
+class Favori extends Model {
+    protected $table = 'favori';
+
+    public function toggle($userId, $ressourceId) {
+        // Logique pour ajouter/retirer
+    }
+
+    public function getByUser($userId) {
+        // Récupérer les favoris d'un utilisateur
+    }
+}
+```
+
+**3. Contrôleur (app/controllers/FavoriController.php) :**
+```php
+class FavoriController extends Controller {
+    public function toggle() {
+        Auth::requireAuth();
+        // Traitement AJAX
+    }
+}
+```
+
+**4. Vue :** Ajouter bouton dans `ressource/show.php`
+
+**5. Route :** Accessible automatiquement via `index.php?controller=favori&action=toggle`
+
+---
+
+## RÉFÉRENCE DU PROJET
+
+### Contexte académique
+
+| Information | Valeur |
+|------------|--------|
+| **Cadre** | SAE R307 - Développement d'applications Web |
+| **Année universitaire** | 2025/2026 |
+| **Institution** | IUT Nice Côte d'Azur |
+| **Département** | Informatique |
+| **Enseignant responsable** | Thanh Phuong NGUYEN |
+| **Email contact** | thanh-phuong.nguyen@univcotedazur.fr |
+
+### Inspiration
+
+Site de référence : https://vod.mediatheque-numerique.com
+
+Le projet s'inspire de ce site pour :
+- L'organisation du catalogue
+- La présentation des ressources
+- Le système de notation et critiques
+- L'interface utilisateur moderne
+
+### Technologies imposées
+
+Dans le cadre pédagogique, les technologies suivantes étaient obligatoires :
+- Backend : PHP (programmation orientée objet)
+- Base de données : MySQL avec PDO
+- Frontend : HTML5, CSS3, JavaScript (pas de framework)
+- Architecture : Pattern MVC strict
+- Sécurité : Protection SQL Injection et XSS obligatoire
+
+---
+
+## NOTES IMPORTANTES
+
+### Environnement de développement vs Production
+
+Ce projet a été développé dans un cadre pédagogique. Avant un déploiement en production réel, il est nécessaire de :
+
+| Aspect | Action requise |
+|--------|---------------|
+| **Sécurité** | Implémenter CSRF, rate limiting, HTTPS obligatoire |
+| **Performance** | Ajouter cache (Redis), CDN pour assets, pagination |
+| **Monitoring** | Logs détaillés, monitoring des erreurs |
+| **Backup** | Sauvegardes automatiques quotidiennes |
+| **Tests** | Tests unitaires et d'intégration |
+| **Documentation** | Compléter la documentation API |
+
+### Améliorations futures possibles
+
+- Système de réservation/emprunt de ressources physiques
+- Notifications par email (nouveautés, rappels)
+- Système de recommandations basé sur les évaluations
+- API REST pour applications mobiles
+- Import/export de données (CSV, JSON)
+- Statistiques avancées pour administrateurs
+- Gestion des images (upload, resize automatique)
+- Système de favoris utilisateur
+- Historique de consultation
+- Mode hors ligne (PWA)
+
+---
+
+## SUPPORT ET CONTRIBUTION
+
+### Signaler un problème
+
+Pour signaler un bug ou proposer une amélioration :
+1. Vérifier qu'il n'existe pas déjà dans les issues
+2. Créer une issue détaillée avec :
+   - Description du problème
+   - Étapes pour reproduire
+   - Comportement attendu vs observé
+   - Screenshots si pertinent
+
+### Contribuer au projet
+
+1. Fork le dépôt
+2. Créer une branche pour votre fonctionnalité (`git checkout -b feature/ma-fonctionnalite`)
+3. Commiter vos changements (`git commit -m 'Ajout de ma fonctionnalité'`)
+4. Pusher vers la branche (`git push origin feature/ma-fonctionnalite`)
+5. Créer une Pull Request
+
+**Convention de commit :**
+- `feat:` Nouvelle fonctionnalité
+- `fix:` Correction de bug
+- `docs:` Documentation
+- `style:` Formatage, CSS
+- `refactor:` Refactorisation
+- `test:` Tests
+- `chore:` Maintenance
+
+---
+
+## LICENCE
+
+Ce projet est développé dans un cadre pédagogique à l'IUT Nice Côte d'Azur.
+
+**Année 2025/2026 - SAE R307**
