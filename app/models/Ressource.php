@@ -154,15 +154,15 @@ class Ressource extends Model {
     /**
      * Récupère les ressources les mieux notées (Top)
      * @param int $limit Nombre de ressources à retourner
-     * @param int $minEvaluations Nombre minimum d'évaluations requises
+     * @param int $minEvaluations Nombre minimum d'évaluations requises (0 = inclure les non notées)
      * @return array Liste des ressources avec note_moyenne et nb_evaluations
      */
-    public function getTopRated($limit = 10, $minEvaluations = 1) {
+    public function getTopRated($limit = 10, $minEvaluations = 0) {
         $sql = "SELECT
                     r.*,
                     l.isbn, l.editeur, l.nombre_pages, l.prix,
                     f.duree, f.support, f.langue, f.sous_titres,
-                    AVG(e.note) as note_moyenne,
+                    COALESCE(AVG(e.note), 0) as note_moyenne,
                     COUNT(e.id_evaluation) as nb_evaluations
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource

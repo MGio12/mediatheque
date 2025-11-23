@@ -56,7 +56,7 @@ class CatalogueController extends Controller {
      */
     public function top() {
         $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? (int)$_GET['limit'] : 20;
-        $ressources = $this->ressourceModel->getTopRated($limit, 1);
+        $ressources = $this->ressourceModel->getTopRated($limit, 0);
 
         // getTopRated retourne déjà note_moyenne et nb_evaluations
         // Enrichir avec genres

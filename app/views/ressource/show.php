@@ -132,17 +132,17 @@
                     <?php endif; ?>
                 </div>
             </div>
-        </div>
 
-        <!-- Résumé Full Width -->
-        <?php if (!empty($ressource['resume'])): ?>
-            <div class="resume-section">
-                <h3 class="section-heading">Résumé</h3>
-                <div class="resume-content">
-                    <?= nl2br(htmlspecialchars($ressource['resume'], ENT_QUOTES, 'UTF-8')) ?>
+            <!-- Résumé Full Width en bas de la carte -->
+            <?php if (!empty($ressource['resume'])): ?>
+                <div class="resume-section-inline">
+                    <h3 class="section-heading">Résumé</h3>
+                    <div class="resume-content">
+                        <?= nl2br(htmlspecialchars($ressource['resume'], ENT_QUOTES, 'UTF-8')) ?>
+                    </div>
                 </div>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
 
         <!-- Formulaire d'évaluation -->
         <?php if ($canEvaluate): ?>
