@@ -127,4 +127,26 @@ class Evaluation extends Model {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$id]);
     }
+
+    /**
+     * Récupérer les dernières évaluations avec infos ressource
+     * @param int $limit Nombre d'avis à retourner
+     * @return array Liste des avis récents avec ressource associée
+     */
+    public function getLatest($limit = 5) {
+        $sql = "SELECT
+                    e.id_evaluation, e.note, e.critique, e.date_evaluation,
+                    u.nom AS utilisateur_nom, u.prenom AS utilisateur_prenom,
+                    r.id_ressource, r.titre, r.type, r.image_url, r.auteur_realisateur
+                FROM evaluation e
+                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+                JOIN ressource r ON e.id_ressource = r.id_ressource
+                ORDER BY e.date_evaluation DESC
+                LIMIT :limit";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }

@@ -1763,3 +1763,183 @@ textarea.form-control {
         justify-content: center;
     }
 }
+
+/* =========================================
+   Fil d'actualite - Derniers avis
+   ========================================= */
+
+.feed-section {
+    background: var(--bg-body);
+    padding: 60px 0;
+}
+
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.feed-item {
+    display: flex;
+    gap: 20px;
+    background: var(--bg-card);
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.3s ease;
+}
+
+.feed-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--color-primary);
+}
+
+.feed-avatar {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+.feed-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.feed-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 1em;
+}
+
+.feed-user {
+    font-weight: 700;
+    color: var(--text-heading);
+}
+
+.feed-action {
+    color: var(--text-tertiary);
+}
+
+.feed-ressource {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+}
+
+.feed-ressource:hover {
+    color: var(--color-primary-light);
+    text-decoration: underline;
+}
+
+.feed-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.feed-badge-livre {
+    background: var(--badge-livre-bg);
+    color: #ffffff;
+}
+
+.feed-badge-film {
+    background: var(--badge-film-bg);
+    color: #ffffff;
+}
+
+.feed-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.feed-rating .star-filled {
+    color: var(--color-warning);
+    font-size: 1.1em;
+}
+
+.feed-rating .star-empty {
+    color: var(--border-medium);
+    font-size: 1.1em;
+}
+
+.feed-note {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+.feed-critique {
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.6;
+    padding: 12px 15px;
+    background: var(--bg-form-alt);
+    border-radius: 8px;
+    border-left: 3px solid var(--color-primary);
+}
+
+.feed-date {
+    color: var(--text-tertiary);
+    font-size: 0.85em;
+}
+
+.feed-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    color: var(--text-secondary);
+    border: 1px dashed var(--border-medium);
+}
+
+.feed-empty p {
+    font-size: 1.1em;
+}
+
+/* Responsive feed */
+@media (max-width: 768px) {
+    .feed-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .feed-avatar {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 0.9em;
+    }
+
+    .feed-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}

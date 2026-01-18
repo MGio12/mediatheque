@@ -6,15 +6,18 @@
 
 require_once __DIR__ . '/../models/Ressource.php';
 require_once __DIR__ . '/../models/Theme.php';
+require_once __DIR__ . '/../models/Evaluation.php';
 
 class HomeController extends Controller {
 
     private $ressourceModel;
     private $themeModel;
+    private $evaluationModel;
 
     public function __construct() {
         $this->ressourceModel = new Ressource();
         $this->themeModel = new Theme();
+        $this->evaluationModel = new Evaluation();
     }
 
     public function index() {
@@ -37,11 +40,15 @@ class HomeController extends Controller {
         // Bloc Sélection : Récupérer tous les thèmes pour affichage dans la navigation
         $themes = $this->themeModel->getAll();
 
+        // Bloc Fil d'actualité : récupération des 5 derniers avis
+        $derniersAvis = $this->evaluationModel->getLatest(5);
+
         // Afficher la page d'accueil avec le layout commun
         $this->render('home/index', [
             'nouveautes' => $nouveautes,
             'topRessources' => $topRessources,
-            'themes' => $themes
+            'themes' => $themes,
+            'derniersAvis' => $derniersAvis
         ], 'Accueil');
     }
 }
