@@ -18,17 +18,23 @@ class HomeController extends Controller {
     }
 
     public function index() {
-        // Bloc Nouveautés : 6 dernières ressources
-        $nouveautes = $this->ressourceModel->getNewest(6);
+        // Bloc Nouveautés : récupération des 8 dernières ressources ajoutées
+        // Enrichissement avec notes moyennes, nombre d'évaluations et genres pour affichage complet
+        $nouveautes = $this->ressourceModel->getNewest(8);
         foreach ($nouveautes as &$ressource) {
             $ressource['note_moyenne'] = $this->ressourceModel->getAverageRating($ressource['id_ressource']);
             $ressource['nb_evaluations'] = $this->ressourceModel->getEvaluationCount($ressource['id_ressource']);
+            $ressource['genres'] = $this->ressourceModel->getGenres($ressource['id_ressource']);
         }
 
-        // Bloc Top : 6 meilleures ressources
-        $topRessources = $this->ressourceModel->getTopRated(6, 1);
+        // Bloc Top Ressources : récupération des 8 ressources les mieux notées
+        // Minimum 1 évaluation requise pour garantir un classement pertinent
+        $topRessources = $this->ressourceModel->getTopRated(8, 1);
+        foreach ($topRessources as &$ressource) {
+            $ressource['genres'] = $this->ressourceModel->getGenres($ressource['id_ressource']);
+        }
 
-        // Bloc Sélection : Récupérer tous les thèmes pour affichage
+        // Bloc Sélection : Récupérer tous les thèmes pour affichage dans la navigation
         $themes = $this->themeModel->getAll();
 
         // Afficher la page d'accueil avec le layout commun
