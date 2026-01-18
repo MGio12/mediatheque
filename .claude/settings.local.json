@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(php -r:*)",
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Bash(chmod:*)",
+      "Bash(php -l:*)",
+      "Bash(md5sum:*)",
+      "Bash(mkdir:*)",
+      "Bash(java -version:*)",
+      "Bash(archlinux-java status:*)",
+      "Bash(plantuml:*)",
+      "Bash(sudo pacman:*)",
+      "Bash(python3:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

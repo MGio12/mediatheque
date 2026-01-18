@@ -1,0 +1,65 @@
+@startuml Core Framework - Classes de base
+
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+skinparam nodesep 30
+skinparam ranksep 40
+
+title Core Framework - Classes de Base MVC
+
+abstract class Controller {
+  + render(view: string, data: array, title: string): void
+  + renderWithoutLayout(view: string, data: array): void
+}
+
+abstract class Model {
+  # pdo: PDO
+  # table: string
+  + __construct()
+  + findAll(): array
+  + findById(id: int): array|false
+  + create(data: array): int
+  + update(id: int, data: array): bool
+  + delete(id: int): bool
+}
+
+class Router {
+  + dispatch(controller: string, action: string): void
+  - error404(): void
+}
+
+class Auth <<static>> {
+  {static} + check(): bool
+  {static} + user(): array|null
+  {static} + hasRole(role: string): bool
+  {static} + requireRole(role: string): void
+  {static} + requireAuth(): void
+  {static} + isStaff(): bool
+  {static} + requireStaff(): void
+}
+
+class Database <<Singleton>> {
+  {static} - instance: PDO|null
+  {static} + getInstance(): PDO
+  {static} + getPDO(): PDO
+  - __construct()
+  - __clone()
+}
+
+' Relations
+Model ..> Database : utilise
+Controller ..> Auth : utilise
+Router ..> Controller : dispatche
+
+note left of Database
+  **Singleton Pattern**
+  Connexion PDO unique
+end note
+
+note bottom of Auth
+  **Authentification**
+  Rôles : utilisateur,
+  bibliothecaire, admin
+end note
+
+@enduml

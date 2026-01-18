@@ -1,0 +1,75 @@
+@startuml Models - Couche métier
+
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+skinparam nodesep 30
+skinparam ranksep 40
+
+title Models - Couche Métier (Business Layer)
+
+abstract class Model {
+  # pdo: PDO
+  # table: string
+}
+
+class Utilisateur extends Model {
+  + findByEmail(email: string): array|false
+  + createUser(data: array): array|false
+  + verifyCredentials(email, password): array|false
+}
+
+class Ressource extends Model {
+  + getAll(): array
+  + findById(id: int): array|false
+  + getAverageRating(id: int): float
+  + getGenres(id: int): array
+  + getThemes(id: int): array
+  + getNewest(limit: int): array
+  + getTopRated(limit: int): array
+  + search(criteria: array): array
+}
+
+class Livre extends Model {
+  + getAllWithDetails(): array
+  + isbnExists(isbn: string): bool
+  + create(data: array): int
+  + update(id: int, data: array): bool
+  + delete(id: int): bool
+}
+
+class Film extends Model {
+  + getAllWithDetails(): array
+  + create(data: array): int
+  + update(id: int, data: array): bool
+  + delete(id: int): bool
+}
+
+class Genre extends Model {
+  + getAll(): array
+  + findById(id: int): array|false
+  + existsByName(nom: string): bool
+  + create(nom: string): int
+  + update(id: int, nom: string): bool
+  + delete(id: int): bool
+}
+
+class Theme extends Model {
+  + getAll(): array
+  + findById(id: int): array|false
+  + create(nom: string): int
+  + update(id: int, nom: string): bool
+}
+
+class Evaluation extends Model {
+  + hasUserEvaluated(idUser, idRessource): bool
+  + createEvaluation(...): bool
+  + getAverage(idRessource): float
+  + getByRessource(idRessource): array
+}
+
+note right of Livre
+  **Transactions**
+  Garantit l'intégrité
+end note
+
+@enduml

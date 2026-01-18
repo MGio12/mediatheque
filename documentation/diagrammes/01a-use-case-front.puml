@@ -1,0 +1,58 @@
+@startuml Use Case Diagram - Front Office
+
+' Configuration
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+title Cas d'Utilisation - Front Office (Visiteurs et Utilisateurs)
+
+' Acteurs
+actor "Visiteur" as visiteur
+actor "Utilisateur" as user
+
+' Relations d'héritage
+visiteur <|-- user
+
+' Package Front Office
+package "Front Office" {
+  usecase "Consulter le catalogue" as UC1
+  usecase "Rechercher une ressource" as UC2
+  usecase "Voir les nouveautés" as UC3
+  usecase "Voir le top" as UC4
+  usecase "Consulter sélection par thème" as UC5
+  usecase "Voir détails ressource" as UC6
+  usecase "S'inscrire" as UC7
+  usecase "Se connecter" as UC8
+  usecase "Se déconnecter" as UC9
+  usecase "Évaluer une ressource" as UC10
+  usecase "Rédiger une critique" as UC11
+  usecase "Gérer son profil" as UC12
+}
+
+' Relations Visiteur
+visiteur --> UC1
+visiteur --> UC2
+visiteur --> UC3
+visiteur --> UC4
+visiteur --> UC5
+visiteur --> UC6
+visiteur --> UC7
+visiteur --> UC8
+
+' Relations Utilisateur
+user --> UC9
+user --> UC10
+user --> UC11
+user --> UC12
+
+' Relations extend
+UC10 .> UC11 : <<extend>>
+
+' Notes
+note left of UC10
+  Note entre 0 et 5 étoiles
+  Une seule évaluation par
+  utilisateur par ressource
+end note
+
+@enduml
