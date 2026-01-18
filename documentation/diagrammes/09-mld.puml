@@ -42,6 +42,7 @@ class livre {
   editeur : VARCHAR(255) NOT NULL
   nombre_pages : INT NOT NULL
   prix : DECIMAL(10,2)
+  langue : VARCHAR(50) NOT NULL DEFAULT 'Français'
   ..
   INDEX(isbn)
 }
@@ -50,9 +51,11 @@ class film {
   + **id_ressource** : INT <<PK,FK>>
   --
   duree : INT NOT NULL
-  support : ENUM('DVD','Blu-ray','Streaming')
+  support : ENUM('DVD','Blu-ray','Streaming') NOT NULL
   langue : VARCHAR(50) NOT NULL
   sous_titres : VARCHAR(255)
+  propose_par : ENUM('Arte','UniversCiné','CNC','Médiathèque numérique') NULL
+  casting : TEXT
 }
 
 class genre {

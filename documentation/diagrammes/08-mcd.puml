@@ -40,6 +40,7 @@ entity "Livre" as livre {
   editeur : VARCHAR(255)
   nombre_pages : INT
   prix : DECIMAL(10,2)
+  langue : VARCHAR(50)
 }
 
 entity "Film" as film {
@@ -49,6 +50,8 @@ entity "Film" as film {
   support : ENUM
   langue : VARCHAR(50)
   sous_titres : VARCHAR(255)
+  propose_par : ENUM
+  casting : TEXT
 }
 
 entity "Genre" as genre {
