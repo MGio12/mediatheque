@@ -36,7 +36,7 @@ function getPDO() {
                 $port = 3306;  // Port MySQL standard
                 $dbname = 'gm401942_elibrary2';  // Base de données production
                 $user = 'gm401942';
-                $password = 'gm401942';  // ⚠️ À modifier avec le vrai mot de passe IUT
+                $password = 'gm401942';  // À modifier avec le vrai mot de passe IUT
             } else {
                 // DÉVELOPPEMENT LOCAL (MAMP)
                 $host = 'localhost';
