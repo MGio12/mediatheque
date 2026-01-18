@@ -96,6 +96,13 @@
                                     <span class="detail-value"><?= htmlspecialchars($ressource['nombre_pages'], ENT_QUOTES, 'UTF-8') ?></span>
                                 </div>
                             <?php endif; ?>
+
+                            <?php if (!empty($ressource['prix'])): ?>
+                                <div class="detail-item">
+                                    <span class="detail-label">Prix</span>
+                                    <span class="detail-value"><?= htmlspecialchars(number_format($ressource['prix'], 2, ',', ' '), ENT_QUOTES, 'UTF-8') ?> €</span>
+                                </div>
+                            <?php endif; ?>
                         <?php else: ?>
                             <?php if (!empty($ressource['duree'])): ?>
                                 <div class="detail-item">

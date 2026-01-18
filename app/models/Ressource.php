@@ -15,7 +15,7 @@ class Ressource extends Model {
     public function getAll() {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix,
                     f.duree, f.support, f.langue
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
@@ -34,7 +34,7 @@ class Ressource extends Model {
     public function findById($id) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix,
                     f.duree, f.support, f.langue
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
@@ -235,7 +235,7 @@ class Ressource extends Model {
     public function search($criteria) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix,
                     f.duree, f.support, f.langue
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
