@@ -73,10 +73,18 @@ CREATE TABLE film (
     support ENUM('DVD', 'Blu-ray', 'Streaming') NOT NULL,
     langue VARCHAR(50) NOT NULL,
     sous_titres VARCHAR(255),
+    propose_par ENUM('Arte', 'UniversCiné', 'CNC', 'Médiathèque numérique') NULL,
+    casting TEXT,
     CONSTRAINT fk_film_ressource FOREIGN KEY (id_ressource)
         REFERENCES ressource(id_ressource)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- Migration : Ajout colonnes film (si table existe déjà)
+-- ============================================
+-- ALTER TABLE film ADD COLUMN propose_par ENUM('Arte', 'UniversCiné', 'CNC', 'Médiathèque numérique') NULL;
+-- ALTER TABLE film ADD COLUMN casting TEXT;
 
 -- ============================================
 -- Table : theme

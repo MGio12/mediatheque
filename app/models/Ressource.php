@@ -16,7 +16,7 @@ class Ressource extends Model {
         $sql = "SELECT
                     r.*,
                     l.isbn, l.editeur, l.nombre_pages, l.prix,
-                    f.duree, f.support, f.langue
+                    f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
                 LEFT JOIN film f ON r.id_ressource = f.id_ressource
@@ -35,7 +35,7 @@ class Ressource extends Model {
         $sql = "SELECT
                     r.*,
                     l.isbn, l.editeur, l.nombre_pages, l.prix,
-                    f.duree, f.support, f.langue
+                    f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
                 LEFT JOIN film f ON r.id_ressource = f.id_ressource
@@ -138,7 +138,7 @@ class Ressource extends Model {
         $sql = "SELECT
                     r.*,
                     l.isbn, l.editeur, l.nombre_pages, l.prix,
-                    f.duree, f.support, f.langue, f.sous_titres
+                    f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
                 LEFT JOIN film f ON r.id_ressource = f.id_ressource
@@ -161,7 +161,7 @@ class Ressource extends Model {
         $sql = "SELECT
                     r.*,
                     l.isbn, l.editeur, l.nombre_pages, l.prix,
-                    f.duree, f.support, f.langue, f.sous_titres,
+                    f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting,
                     COALESCE(AVG(e.note), 0) as note_moyenne,
                     COUNT(e.id_evaluation) as nb_evaluations
                 FROM ressource r
@@ -189,7 +189,7 @@ class Ressource extends Model {
         $sql = "SELECT
                     r.*,
                     l.isbn, l.editeur, l.nombre_pages, l.prix,
-                    f.duree, f.support, f.langue, f.sous_titres
+                    f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
                 LEFT JOIN film f ON r.id_ressource = f.id_ressource
@@ -236,7 +236,7 @@ class Ressource extends Model {
         $sql = "SELECT
                     r.*,
                     l.isbn, l.editeur, l.nombre_pages, l.prix,
-                    f.duree, f.support, f.langue
+                    f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
                 LEFT JOIN film f ON r.id_ressource = f.id_ressource

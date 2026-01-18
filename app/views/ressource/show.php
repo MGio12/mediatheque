@@ -124,6 +124,20 @@
                                     <span class="detail-value"><?= htmlspecialchars($ressource['langue'], ENT_QUOTES, 'UTF-8') ?></span>
                                 </div>
                             <?php endif; ?>
+
+                            <?php if (!empty($ressource['propose_par'])): ?>
+                                <div class="detail-item">
+                                    <span class="detail-label">Proposé par</span>
+                                    <span class="detail-value"><?= htmlspecialchars($ressource['propose_par'], ENT_QUOTES, 'UTF-8') ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($ressource['casting'])): ?>
+                                <div class="detail-item">
+                                    <span class="detail-label">Casting</span>
+                                    <span class="detail-value"><?= htmlspecialchars($ressource['casting'], ENT_QUOTES, 'UTF-8') ?></span>
+                                </div>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
 
