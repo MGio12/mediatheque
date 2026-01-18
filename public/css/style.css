@@ -5,7 +5,7 @@
     --bg-card: #ffffff;
     --bg-header: rgba(255, 255, 255, 0.98);
     --bg-footer: #1a1f3a;
-    --bg-table-header: #e8f0fa;
+    --bg-table-header: #2563eb;
     --bg-table-hover: #f5f9fc;
     --bg-form-alt: #f5f9fc;
     --bg-evaluation-card: #fafbfc;
@@ -84,7 +84,7 @@
     --bg-card: #1e293b;
     --bg-header: rgba(30, 41, 59, 0.98);
     --bg-footer: #0f0f1e;
-    --bg-table-header: #1e3a8a;
+    --bg-table-header: #1e40af;
     --bg-table-hover: #1e40af;
     --bg-form-alt: #1e293b;
     --bg-evaluation-card: #334155;
@@ -863,7 +863,7 @@ textarea.form-control {
 
 .table th,
 .table td {
-    padding: 12px 15px;
+    padding: 14px 18px;
     text-align: left;
 }
 

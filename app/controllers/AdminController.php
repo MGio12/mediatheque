@@ -4,6 +4,9 @@
  * SAE R307 - Médiathèque
  */
 
+// Charger le modèle Evaluation
+require_once __DIR__ . '/../models/Evaluation.php';
+
 class AdminController extends Controller {
 
     public function index() {
@@ -81,5 +84,44 @@ class AdminController extends Controller {
             'topRessources' => $topRessources,
             'dernieresEvaluations' => $dernieresEvaluations
         ], 'Dashboard');
+    }
+
+    /**
+     * Suppression d'une évaluation (réservé aux administrateurs)
+     */
+    public function deleteEvaluation() {
+        // Vérification manuelle du rôle administrateur (pas de middleware)
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'administrateur') {
+            $_SESSION['error'] = "Accès interdit. Seuls les administrateurs peuvent supprimer des évaluations.";
+            header('Location: index.php');
+            exit;
+        }
+
+        // Récupération de l'ID
+        $id = $_GET['id'] ?? null;
+
+        if (!$id || !is_numeric($id)) {
+            $_SESSION['error'] = "ID d'évaluation invalide.";
+            header('Location: index.php?controller=admin&action=index');
+            exit;
+        }
+
+        // Suppression via le modèle
+        try {
+            $evaluationModel = new Evaluation();
+            $success = $evaluationModel->deleteEvaluation($id);
+
+            if ($success) {
+                $_SESSION['success'] = "L'évaluation a été supprimée avec succès.";
+            } else {
+                $_SESSION['error'] = "Erreur lors de la suppression de l'évaluation.";
+            }
+        } catch (PDOException $e) {
+            error_log("Erreur suppression évaluation: " . $e->getMessage());
+            $_SESSION['error'] = "Erreur lors de la suppression de l'évaluation.";
+        }
+
+        header('Location: index.php?controller=admin&action=index');
+        exit;
     }
 }

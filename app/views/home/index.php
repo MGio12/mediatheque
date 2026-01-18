@@ -1,8 +1,8 @@
 <!-- Hero Section -->
 <section class="hero">
     <div class="container">
-        <h2>Explorez Notre Univers Créatif</h2>
-        <p>Plongez dans une collection exceptionnelle de livres, films et ressources. Découvrez, apprenez et inspirez-vous avec nos milliers de contenus sélectionnés.</p>
+        <h2>Votre Médiathèque Numérique</h2>
+        <p>Gérez et consultez notre catalogue de livres, films et documents en un clic.</p>
         <div class="cta-buttons">
             <a href="?controller=catalogue&action=index" class="btn btn-primary">Parcourir le Catalogue</a>
             <a href="?controller=catalogue&action=search" class="btn btn-secondary">Rechercher</a>

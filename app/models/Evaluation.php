@@ -115,4 +115,16 @@ class Evaluation extends Model {
 
         return $stmt->fetchAll();
     }
+
+    /**
+     * Supprimer une évaluation
+     * @param int $id ID de l'évaluation
+     * @return bool True si suppression réussie
+     */
+    public function deleteEvaluation($id) {
+        $sql = "DELETE FROM evaluation WHERE id_evaluation = ?";
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$id]);
+    }
 }

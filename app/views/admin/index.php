@@ -116,6 +116,7 @@
                         <th>Type</th>
                         <th style="text-align: center;">Note</th>
                         <th>Commentaire</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -138,6 +139,18 @@
                                     <?= (mb_strlen($eval['critique']) > 100) ? '...' : '' ?>
                                 <?php else: ?>
                                     <em style="color: #95a5a6;">Aucun commentaire</em>
+                                <?php endif; ?>
+                            </td>
+                            <td style="text-align: center;">
+                                <?php if (Auth::user()['role'] === 'administrateur'): ?>
+                                    <a href="index.php?controller=admin&action=deleteEvaluation&id=<?= htmlspecialchars($eval['id_evaluation'], ENT_QUOTES, 'UTF-8') ?>"
+                                       class="btn-danger btn-small"
+                                       onclick="return confirm('Supprimer cette évaluation ?')"
+                                       style="background-color: #e74c3c; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 0.85em;">
+                                        Supprimer
+                                    </a>
+                                <?php else: ?>
+                                    <span style="color: #95a5a6; font-style: italic;">N/A</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
