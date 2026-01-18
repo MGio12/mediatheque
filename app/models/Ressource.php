@@ -15,7 +15,7 @@ class Ressource extends Model {
     public function getAll() {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix, l.langue AS livre_langue,
                     f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
@@ -34,7 +34,7 @@ class Ressource extends Model {
     public function findById($id) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix, l.langue AS livre_langue,
                     f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
@@ -137,7 +137,7 @@ class Ressource extends Model {
     public function getNewest($limit = 10) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix, l.langue AS livre_langue,
                     f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
@@ -160,7 +160,7 @@ class Ressource extends Model {
     public function getTopRated($limit = 10, $minEvaluations = 0) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix, l.langue AS livre_langue,
                     f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting,
                     COALESCE(AVG(e.note), 0) as note_moyenne,
                     COUNT(e.id_evaluation) as nb_evaluations
@@ -188,7 +188,7 @@ class Ressource extends Model {
     public function getByTheme($idTheme) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix, l.langue AS livre_langue,
                     f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource
@@ -235,7 +235,7 @@ class Ressource extends Model {
     public function search($criteria) {
         $sql = "SELECT
                     r.*,
-                    l.isbn, l.editeur, l.nombre_pages, l.prix,
+                    l.isbn, l.editeur, l.nombre_pages, l.prix, l.langue AS livre_langue,
                     f.duree, f.support, f.langue, f.sous_titres, f.propose_par, f.casting
                 FROM ressource r
                 LEFT JOIN livre l ON r.id_ressource = l.id_ressource

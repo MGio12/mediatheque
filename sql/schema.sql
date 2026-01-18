@@ -58,6 +58,7 @@ CREATE TABLE livre (
     editeur VARCHAR(255) NOT NULL,
     nombre_pages INT NOT NULL,
     prix DECIMAL(10,2),
+    langue VARCHAR(50) NOT NULL DEFAULT 'Français',
     CONSTRAINT fk_livre_ressource FOREIGN KEY (id_ressource)
         REFERENCES ressource(id_ressource)
         ON DELETE CASCADE,

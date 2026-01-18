@@ -64,8 +64,8 @@ INSERT INTO genre (id_genre, nom) VALUES
 INSERT INTO ressource (id_ressource, type, titre, auteur_realisateur, annee, resume, image_url, pays) VALUES
 (1, 'livre', 'Dune', 'Frank Herbert', 1965, 'Dans un futur lointain, le duc Leto Atréides reçoit la charge de la planète Arrakis, unique source de l\'Épice.', 'Dune.jpg', 'États-Unis');
 
-INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix) VALUES
-(1, '9782266283053', 'Pocket', 832, 12.50);
+INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix, langue) VALUES
+(1, '9782266283053', 'Pocket', 832, 12.50, 'Français');
 
 INSERT INTO ressource_genre (id_ressource, id_genre) VALUES (1, 1), (1, 4); -- Science-fiction, Aventure
 INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (1, 1), (1, 8), (1, 6); -- Pouvoir, Survie, Identité
@@ -74,8 +74,8 @@ INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (1, 1), (1, 8), (1, 
 INSERT INTO ressource (id_ressource, type, titre, auteur_realisateur, annee, resume, image_url, pays) VALUES
 (2, 'livre', '1984', 'George Orwell', 1949, 'De tous les carrefours importants, le visage à la moustache noire vous fixait du regard. BIG BROTHER VOUS REGARDE.', '1984.jpg', 'Royaume-Uni');
 
-INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix) VALUES
-(2, '9782070368228', 'Gallimard', 448, 8.90);
+INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix, langue) VALUES
+(2, '9782070368228', 'Gallimard', 448, 8.90, 'Français');
 
 INSERT INTO ressource_genre (id_ressource, id_genre) VALUES (2, 1), (2, 6); -- Science-fiction, Thriller
 INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (2, 1), (2, 4), (2, 7); -- Pouvoir, Liberté, Technologie
@@ -84,8 +84,8 @@ INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (2, 1), (2, 4), (2, 
 INSERT INTO ressource (id_ressource, type, titre, auteur_realisateur, annee, resume, image_url, pays) VALUES
 (3, 'livre', 'Le Petit Prince', 'Antoine de Saint-Exupéry', 1943, 'J\'ai ainsi vécu seul, sans personne avec qui parler véritablement, jusqu\'à une panne dans le désert du Sahara.', 'LePetitPrince.jpg', 'France');
 
-INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix) VALUES
-(3, '9782070408504', 'Gallimard', 96, 6.50);
+INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix, langue) VALUES
+(3, '9782070408504', 'Gallimard', 96, 6.50, 'Français');
 
 INSERT INTO ressource_genre (id_ressource, id_genre) VALUES (3, 5); -- Fantastique
 INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (3, 9), (3, 3), (3, 6); -- Amitié, Amour, Identité
@@ -94,8 +94,8 @@ INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (3, 9), (3, 3), (3, 
 INSERT INTO ressource (id_ressource, type, titre, auteur_realisateur, annee, resume, image_url, pays) VALUES
 (4, 'livre', 'Les Misérables', 'Victor Hugo', 1862, 'Le destin de Jean Valjean, forçat évadé, et de Cosette, fille de Fantine, dans la France du XIXe siècle.', 'LesMiserables.jpg', 'France');
 
-INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix) VALUES
-(4, '9782253096337', 'Livre de Poche', 1600, 18.00);
+INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix, langue) VALUES
+(4, '9782253096337', 'Livre de Poche', 1600, 18.00, 'Français');
 
 INSERT INTO ressource_genre (id_ressource, id_genre) VALUES (4, 2), (4, 10); -- Drame, Historique
 INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (4, 4), (4, 3), (4, 2); -- Liberté, Amour, Famille
@@ -104,8 +104,8 @@ INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (4, 4), (4, 3), (4, 
 INSERT INTO ressource (id_ressource, type, titre, auteur_realisateur, annee, resume, image_url, pays) VALUES
 (5, 'livre', 'Sapiens : Une brève histoire de l\'humanité', 'Yuval Noah Harari', 2011, 'Comment l\'Homo sapiens a-t-il réussi à dominer la planète ? Une fresque historique audacieuse.', 'Sapiens.jpg', 'Israël');
 
-INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix) VALUES
-(5, '9782226257017', 'Albin Michel', 512, 24.00);
+INSERT INTO livre (id_ressource, isbn, editeur, nombre_pages, prix, langue) VALUES
+(5, '9782226257017', 'Albin Michel', 512, 24.00, 'Français');
 
 INSERT INTO ressource_genre (id_ressource, id_genre) VALUES (5, 10); -- Historique
 INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (5, 1), (5, 8), (5, 6); -- Pouvoir, Survie, Identité
@@ -161,4 +161,15 @@ INSERT INTO film (id_ressource, duree, support, langue, sous_titres, propose_par
 
 INSERT INTO ressource_genre (id_ressource, id_genre) VALUES (10, 1), (10, 3); -- Science-fiction, Action
 INSERT INTO ressource_theme (id_ressource, id_theme) VALUES (10, 7), (10, 4), (10, 6); -- Technologie, Liberté, Identité
+
+-- ============================================
+-- MIGRATION : Ajout de la langue aux livres
+-- (Exécuter ces commandes sur une BD existante)
+-- ============================================
+
+-- Étape 1 : Ajouter la colonne langue à la table livre
+-- ALTER TABLE livre ADD COLUMN langue VARCHAR(50) NOT NULL DEFAULT 'Français';
+
+-- Étape 2 : Mettre à jour tous les livres existants avec la langue Français
+-- UPDATE livre SET langue = 'Français';
 
