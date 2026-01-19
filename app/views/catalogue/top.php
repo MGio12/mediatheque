@@ -46,7 +46,7 @@
                                     <?php
                                     $note = round($ressource['note_moyenne']);
                                     for ($i = 1; $i <= 5; $i++) {
-                                        echo $i <= $note ? '★' : '☆';
+                                        echo $i <= $note ? '&starf;' : '&star;';
                                     }
                                     ?>
                                 </span>

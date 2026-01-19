@@ -57,7 +57,7 @@
                             <?php
                             $note = round($ressource['note_moyenne']);
                             for ($i = 1; $i <= 5; $i++) {
-                                echo $i <= $note ? '★' : '☆';
+                                echo $i <= $note ? '&starf;' : '&star;';
                             }
                             ?>
                         </div>
@@ -184,7 +184,7 @@
                         <div class="star-rating-input">
                             <?php for($i=5; $i>=1; $i--): ?>
                                 <input type="radio" name="note" value="<?= $i ?>" id="star-<?= $i ?>">
-                                <label for="star-<?= $i ?>">★</label>
+                                <label for="star-<?= $i ?>">&starf;</label>
                             <?php endfor; ?>
                         </div>
                     </div>
@@ -210,7 +210,7 @@
             </div>
         <?php elseif ($hasEvaluated): ?>
             <div class="user-feedback-status success">
-                <span class="icon">✓</span> Vous avez déjà donné votre avis sur cette œuvre.
+                <span class="icon">&check;</span> Vous avez déjà donné votre avis sur cette œuvre.
             </div>
         <?php elseif (!Auth::check()): ?>
             <div class="user-feedback-status info">
@@ -229,7 +229,7 @@
 
             <?php if (empty($evaluations)): ?>
                 <div class="empty-reviews">
-                    <div class="empty-icon">💬</div>
+                    <div class="empty-icon"></div>
                     <p>Soyez le premier à donner votre avis !</p>
                 </div>
             <?php else: ?>
@@ -251,7 +251,7 @@
                                 <div class="review-rating">
                                     <?php
                                     for ($i = 1; $i <= 5; $i++) {
-                                        echo $i <= $eval['note'] ? '★' : '☆';
+                                        echo $i <= $eval['note'] ? '&starf;' : '&star;';
                                     }
                                     ?>
                                 </div>
