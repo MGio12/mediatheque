@@ -1,0 +1,2986 @@
+================================================================================
+                    DOCUMENT DE SPECIFICATIONS TECHNIQUES
+                    E-LIBRARY - MEDIATHEQUE NUMERIQUE
+                    SAE R307 - Annee 2025/2026
+================================================================================
+
+                              TABLE DES MATIERES
+
+1. Introduction
+   1.1 Presentation generale du projet E-Library
+   1.2 Objectifs du systeme
+   1.3 Public vise
+   1.4 Contexte pedagogique (SAE R307)
+
+2. Presentation globale du systeme
+   2.1 Description fonctionnelle du systeme
+   2.2 Architecture generale (MVC)
+   2.3 Description des roles utilisateurs
+   2.4 Description du Front-Office et du Back-Office
+
+3. Specification fonctionnelle
+   3.1 Description des fonctionnalites publiques
+   3.2 Description des fonctionnalites authentifiees
+   3.3 Description des fonctionnalites d'administration
+   3.4 Contraintes fonctionnelles et regles de gestion
+
+4. Specification technique
+   4.1 Architecture logicielle
+   4.2 Diagrammes UML
+   4.3 Specification des composants
+   4.4 Specification des methodes principales
+
+5. Conception de la base de donnees
+   5.1 Modele Conceptuel de Donnees (MCD)
+   5.2 Modele Logique de Donnees (MLD)
+   5.3 Script SQL
+
+6. Securite et contraintes techniques
+
+7. Conclusion
+
+================================================================================
+                              1. INTRODUCTION
+================================================================================
+
+1.1 PRESENTATION GENERALE DU PROJET E-LIBRARY
+--------------------------------------------------------------------------------
+
+E-Library est une application web de gestion de mediatheque numerique permettant
+aux utilisateurs de consulter, rechercher et evaluer des ressources numeriques
+telles que des livres et des films. Ce projet s'inscrit dans le cadre de la
+SAE R307 et vise a moderniser l'acces aux ressources culturelles en proposant
+une interface conviviale inspiree du site https://vod.mediatheque-numerique.com.
+
+Le systeme offre une plateforme complete permettant :
+- La consultation d'un catalogue enrichi de livres et films
+- La recherche multicritere de ressources
+- L'evaluation et la notation des ressources par les utilisateurs
+- La gestion administrative du catalogue par le personnel
+
+L'application est developpee en PHP selon le patron d'architecture MVC
+(Model-View-Controller) avec une base de donnees MySQL, conformement aux
+exigences techniques de la SAE.
+
+
+1.2 OBJECTIFS DU SYSTEME
+--------------------------------------------------------------------------------
+
+Les objectifs principaux du systeme E-Library sont :
+
+CATALOGAGE INTELLIGENT
+- Organisation claire des ressources par categories, themes et genres
+- Classification hierarchique permettant une navigation intuitive
+- Gestion des metadonnees specifiques aux livres (ISBN, editeur, pages)
+  et aux films (duree, support, casting)
+
+RECHERCHE AVANCEE
+- Outil de recherche multicritere performant
+- Filtrage par type de ressource (livre/film)
+- Filtrage par genre et theme
+- Filtrage par plage d'annees de publication
+
+INTERACTION UTILISATEUR
+- Systeme d'evaluation et de notation des ressources (0 a 5 etoiles)
+- Possibilite de rediger des critiques textuelles
+- Consultation des avis de la communaute
+
+GESTION MULTI-PROFILS
+- Differents niveaux d'acces selon le type d'utilisateur
+- Roles hierarchises : Utilisateur, Bibliothecaire, Administrateur
+- Controle d'acces strict aux fonctionnalites sensibles
+
+DECOUVRABILITE
+- Mise en avant des nouveautes (dernieres ressources ajoutees)
+- Affichage des contenus populaires (top notes)
+- Selections thematiques
+
+
+1.3 PUBLIC VISE
+--------------------------------------------------------------------------------
+
+Le systeme E-Library s'adresse a trois categories d'utilisateurs :
+
+UTILISATEURS FINAUX (Grand public)
+- Personnes souhaitant decouvrir des livres et films
+- Lecteurs et cinephiles cherchant des recommandations
+- Utilisateurs desirant partager leurs avis sur les ressources consultees
+
+PERSONNEL DE BIBLIOTHEQUE (Bibliothecaires)
+- Professionnels charges d'enrichir le catalogue
+- Gestionnaires des ressources (ajout, modification, suppression)
+- Personnel assurant la qualite des metadonnees
+
+ADMINISTRATEURS (Personnel technique)
+- Responsables de la gestion des referentiels (genres, themes)
+- Superviseurs de l'activite globale du systeme
+- Moderateurs des contenus utilisateurs
+
+
+1.4 CONTEXTE PEDAGOGIQUE (SAE R307)
+--------------------------------------------------------------------------------
+
+Ce projet s'inscrit dans le cadre de la Situation d'Apprentissage et
+d'Evaluation (SAE) R307, enseignee par M. NGUYEN Thanh Phuong a l'IUT.
+
+OBJECTIFS PEDAGOGIQUES :
+- Maitriser l'architecture MVC en PHP
+- Implementer une base de donnees relationnelle avec MySQL
+- Appliquer les bonnes pratiques de securite web (PDO, XSS, hashage)
+- Realiser une documentation technique complete avec diagrammes UML
+- Travailler en equipe avec gestion de versions (Git)
+
+COMPETENCES EVALUEES :
+- Conception et modelisation de bases de donnees (MCD/MLD)
+- Developpement d'applications web dynamiques
+- Securisation des applications contre les attaques courantes
+- Redaction de documentation technique
+- Travail collaboratif et gestion de projet
+
+LIVRABLES ATTENDUS :
+- Code source fonctionnel sur depot Git
+- Cahier des charges (2 points)
+- Specifications techniques avec diagrammes UML (5 points)
+- Repartition des taches (1 point)
+- Code source evalue sur 12 points
+
+
+================================================================================
+                    2. PRESENTATION GLOBALE DU SYSTEME
+================================================================================
+
+2.1 DESCRIPTION FONCTIONNELLE DU SYSTEME
+--------------------------------------------------------------------------------
+
+E-Library est un systeme de gestion de mediatheque numerique qui permet la
+consultation, la recherche et l'evaluation de ressources culturelles (livres
+et films). Le systeme se decompose en deux parties principales :
+
+FRONT-OFFICE (Partie publique)
+Interface accessible a tous les visiteurs et utilisateurs connectes pour :
+- Consulter le catalogue de ressources
+- Rechercher des ressources selon divers criteres
+- Visualiser les details d'une ressource
+- Evaluer et commenter les ressources (utilisateurs connectes)
+
+BACK-OFFICE (Partie administration)
+Interface reservee au personnel (bibliothecaires et administrateurs) pour :
+- Gerer le catalogue de ressources (CRUD livres et films)
+- Administrer les referentiels (genres et themes)
+- Consulter les statistiques d'utilisation
+- Moderer les evaluations utilisateurs
+
+FLUX FONCTIONNEL PRINCIPAL :
+
+1. Un visiteur accede au site et consulte le catalogue
+2. Il peut rechercher une ressource ou parcourir les nouveautes/tops
+3. Pour evaluer une ressource, il doit s'inscrire puis se connecter
+4. Une fois connecte, il peut noter et commenter les ressources
+5. Le personnel peut gerer le catalogue via l'interface d'administration
+
+
+2.2 ARCHITECTURE GENERALE (MVC)
+--------------------------------------------------------------------------------
+
+Le systeme E-Library est construit selon le patron d'architecture MVC
+(Model-View-Controller) qui separe les responsabilites en trois couches :
+
+SCHEMA ARCHITECTURAL :
+
++-------------------------------------------------------------------+
+|                      NAVIGATEUR (Client)                           |
+|                    HTML + CSS + JavaScript                         |
++--------------------------------+----------------------------------+
+                                 | HTTP Request/Response
+                                 v
++-------------------------------------------------------------------+
+|                    SERVEUR WEB (Apache/Nginx)                      |
++--------------------------------+----------------------------------+
+                                 |
+                                 v
++-------------------------------------------------------------------+
+|                         index.php                                  |
+|                    (Front Controller)                              |
++--------------------------------+----------------------------------+
+                                 |
+                                 v
++-------------------------------------------------------------------+
+|                          Router                                    |
+|              Parse URL -> Controller/Action                        |
++--------------------------------+----------------------------------+
+                                 |
+         +-----------------------+------------------------+
+         v                       v                        v
++----------------+      +----------------+      +----------------+
+|  Controllers   |      |  Controllers   |      |  Controllers   |
+|   (Front)      |      |   (Admin)      |      |   (Auth)       |
++-------+--------+      +-------+--------+      +-------+--------+
+        |                       |                       |
+        +-----------------------+-----------------------+
+                                v
+                       +------------------+
+                       |   Auth Helper    |
+                       |  (Middleware)    |
+                       +--------+---------+
+                                |
+                       +--------+--------+
+                       v                 v
+              +----------------+  +--------------+
+              |     Models     |  |    Views     |
+              |  (Business)    |  | (Templates)  |
+              +-------+--------+  +--------------+
+                      |
+                      v
+              +----------------+
+              |   Database     |
+              |  (Singleton)   |
+              +-------+--------+
+                      |
+                      v
+              +----------------+
+              |  MySQL (PDO)   |
+              +----------------+
+
+COUCHE MODELE (Model) :
+- Gere l'acces aux donnees via PDO
+- Implemente la logique metier
+- Valide les donnees selon les regles metier
+- Classes : Utilisateur, Ressource, Livre, Film, Genre, Theme, Evaluation
+
+COUCHE VUE (View) :
+- Genere l'interface utilisateur HTML
+- Affiche les donnees formatees
+- Protege contre les attaques XSS
+- Templates PHP avec layout commun
+
+COUCHE CONTROLEUR (Controller) :
+- Recoit et analyse les requetes HTTP
+- Orchestre les interactions Model/View
+- Gere les redirections et messages flash
+- Verifie les autorisations d'acces
+
+
+2.3 DESCRIPTION DES ROLES UTILISATEURS
+--------------------------------------------------------------------------------
+
+Le systeme definit trois roles utilisateurs avec des niveaux de permissions
+croissants :
+
+ROLE : UTILISATEUR (utilisateur)
+--------------------------------
+Niveau d'acces : Utilisateur standard connecte
+Permissions :
+- Consulter le catalogue complet
+- Rechercher des ressources (multicritere)
+- Visualiser les details des ressources
+- Consulter les evaluations de la communaute
+- Evaluer une ressource (note de 0 a 5 etoiles)
+- Rediger une critique textuelle (max 1000 caracteres)
+- Visualiser son historique d'evaluations
+Restrictions :
+- Une seule evaluation par utilisateur par ressource
+- Pas d'acces aux fonctions d'administration
+
+ROLE : BIBLIOTHECAIRE (bibliothecaire)
+--------------------------------------
+Niveau d'acces : Personnel de la mediatheque
+Permissions heritees : Toutes les permissions utilisateur
+Permissions supplementaires :
+- Acceder au dashboard d'administration
+- Gerer les livres (creation, modification, suppression)
+- Gerer les films (creation, modification, suppression)
+- Associer les ressources aux genres et themes
+- Consulter les statistiques du catalogue
+Restrictions :
+- Pas d'acces a la gestion des referentiels
+- Pas de droits de moderation des evaluations
+
+ROLE : ADMINISTRATEUR (administrateur)
+--------------------------------------
+Niveau d'acces : Administration complete
+Permissions heritees : Toutes les permissions bibliothecaire
+Permissions supplementaires :
+- Gerer les genres (creation, modification, suppression)
+- Gerer les themes (creation, modification, suppression)
+- Supprimer les evaluations inappropriees
+- Superviser l'activite globale du systeme
+Restrictions : Aucune
+
+MATRICE DES PERMISSIONS :
+
++------------------------------------+-------------+---------------+--------------+
+| Fonctionnalite                     | Utilisateur | Bibliothecaire| Administrateur|
++------------------------------------+-------------+---------------+--------------+
+| CONSULTATION                       |             |               |              |
+| Consulter le catalogue             |     Oui     |      Oui      |     Oui      |
+| Rechercher des ressources          |     Oui     |      Oui      |     Oui      |
+| Voir les details ressource         |     Oui     |      Oui      |     Oui      |
+| Voir les evaluations               |     Oui     |      Oui      |     Oui      |
++------------------------------------+-------------+---------------+--------------+
+| EVALUATION                         |             |               |              |
+| Evaluer une ressource              |     Oui     |      Oui      |     Oui      |
+| Voir ses propres evaluations       |     Oui     |      Oui      |     Oui      |
++------------------------------------+-------------+---------------+--------------+
+| GESTION DES RESSOURCES             |             |               |              |
+| Ajouter une ressource              |     Non     |      Oui      |     Oui      |
+| Modifier une ressource             |     Non     |      Oui      |     Oui      |
+| Supprimer une ressource            |     Non     |      Oui      |     Oui      |
+| Associer genres/themes             |     Non     |      Oui      |     Oui      |
++------------------------------------+-------------+---------------+--------------+
+| GESTION DES REFERENTIELS           |             |               |              |
+| Creer un theme/genre               |     Non     |      Non      |     Oui      |
+| Modifier un theme/genre            |     Non     |      Non      |     Oui      |
+| Supprimer un theme/genre           |     Non     |      Non      |     Oui      |
++------------------------------------+-------------+---------------+--------------+
+| MODERATION                         |             |               |              |
+| Supprimer des evaluations          |     Non     |      Non      |     Oui      |
++------------------------------------+-------------+---------------+--------------+
+
+
+2.4 DESCRIPTION DU FRONT-OFFICE ET DU BACK-OFFICE
+--------------------------------------------------------------------------------
+
+FRONT-OFFICE : INTERFACE PUBLIQUE
+---------------------------------
+
+Le Front-Office constitue la partie publique de l'application, accessible a tous
+les visiteurs et utilisateurs connectes. Il comprend les fonctionnalites suivantes :
+
+Page d'accueil (HomeController::index)
+- Section "Nouveautes" : 8 dernieres ressources ajoutees
+- Section "Top Notes" : 8 ressources les mieux notees
+- Section "Derniers avis de la communaute" : 5 derniers avis
+- Menu de navigation par theme
+
+Catalogue (CatalogueController)
+- Liste complete des ressources avec pagination
+- Affichage des notes moyennes et nombre d'evaluations
+- Badges de type (Livre/Film)
+- Lien vers les details de chaque ressource
+
+Nouveautes (CatalogueController::nouveautes)
+- 20 dernieres ressources ajoutees
+- Tri par date d'ajout decroissante
+
+Top Notes (CatalogueController::top)
+- Ressources triees par note moyenne
+- Minimum 1 evaluation pour apparaitre
+
+Selection par theme (CatalogueController::selection)
+- Filtrage des ressources par theme specifique
+- Navigation thematique
+
+Recherche avancee (CatalogueController::search)
+- Formulaire de recherche multicritere
+- Criteres : mot-cle, type, genre, theme, annees
+
+Detail ressource (RessourceController::show)
+- Informations completes de la ressource
+- Metadonnees specifiques (livre ou film)
+- Genres et themes associes
+- Note moyenne et liste des evaluations
+- Formulaire d'evaluation (utilisateurs connectes)
+
+Authentification (AuthController)
+- Inscription avec validation des donnees
+- Connexion avec verification securisee
+- Deconnexion
+
+BACK-OFFICE : INTERFACE D'ADMINISTRATION
+-----------------------------------------
+
+Le Back-Office est reserve au personnel de la mediatheque (bibliothecaires et
+administrateurs). Il permet la gestion complete du catalogue et des referentiels.
+
+Dashboard (AdminController::index)
+- Statistiques globales :
+  * Nombre total de ressources
+  * Nombre de livres et films
+  * Nombre d'evaluations
+  * Nombre de genres et themes
+- Top 5 des ressources les mieux notees
+- 10 dernieres evaluations
+
+Gestion des livres (LivreController)
+- Liste de tous les livres avec details
+- Formulaire de creation (titre, auteur, ISBN, etc.)
+- Formulaire de modification
+- Suppression avec confirmation
+- Association aux genres et themes (checkboxes)
+
+Gestion des films (FilmController)
+- Liste de tous les films avec details
+- Formulaire de creation (titre, realisateur, duree, etc.)
+- Formulaire de modification
+- Suppression avec confirmation
+- Association aux genres et themes (checkboxes)
+
+Gestion des genres (GenreController) - Administrateurs uniquement
+- Liste des genres existants
+- Creation de nouveaux genres
+- Modification des noms de genres
+- Suppression de genres
+
+Gestion des themes (ThemeController) - Administrateurs uniquement
+- Liste des themes existants
+- Creation de nouveaux themes
+- Modification des noms de themes
+- Suppression de themes
+
+Moderation (AdminController) - Administrateurs uniquement
+- Suppression des evaluations inappropriees
+
+
+================================================================================
+                      3. SPECIFICATION FONCTIONNELLE
+================================================================================
+
+3.1 DESCRIPTION DES FONCTIONNALITES PUBLIQUES
+--------------------------------------------------------------------------------
+
+FONCTIONNALITE F01 : PAGE D'ACCUEIL
+-----------------------------------
+Description : Affiche la page d'accueil avec mise en avant des contenus
+URL : index.php ou ?controller=home&action=index
+Acteurs : Tous (visiteurs et utilisateurs connectes)
+
+Donnees affichees :
+- Section "Nouveautes" : 8 dernieres ressources ajoutees
+  * Image de couverture
+  * Titre et auteur/realisateur
+  * Badge type (Livre/Film)
+  * Note moyenne si evaluee
+- Section "Top Notes" : 8 ressources les mieux notees
+  * Memes informations que Nouveautes
+  * Trie par note moyenne decroissante
+- Section "Derniers avis de la communaute" : 5 derniers avis
+  * Nom de l'utilisateur
+  * Titre de la ressource
+  * Note attribuee
+  * Extrait de la critique
+  * Date de l'evaluation
+
+Regles de gestion :
+- Les ressources sans image affichent un placeholder
+- Les ressources non evaluees affichent "Pas encore note"
+- Le calcul de la note moyenne arrondit a 1 decimale
+
+
+FONCTIONNALITE F02 : CATALOGUE GENERAL
+--------------------------------------
+Description : Liste toutes les ressources du catalogue
+URL : ?controller=catalogue&action=index
+Acteurs : Tous
+
+Donnees affichees pour chaque ressource :
+- Image de couverture
+- Titre
+- Auteur (livre) ou Realisateur (film)
+- Annee de publication
+- Badge de type (Livre/Film)
+- Note moyenne avec etoiles
+- Nombre d'evaluations
+- Liste des genres associes (badges)
+
+Regles de gestion :
+- Tri par date d'ajout (plus recentes en premier)
+- Affichage en grille responsive
+
+
+FONCTIONNALITE F03 : NOUVEAUTES
+-------------------------------
+Description : Affiche les dernieres ressources ajoutees
+URL : ?controller=catalogue&action=nouveautes
+Acteurs : Tous
+
+Specifications :
+- Limite : 20 ressources
+- Tri : Date d'ajout decroissante
+- Memes informations que le catalogue general
+
+
+FONCTIONNALITE F04 : TOP NOTES
+------------------------------
+Description : Affiche les ressources les mieux notees
+URL : ?controller=catalogue&action=top
+Acteurs : Tous
+
+Specifications :
+- Tri : Note moyenne decroissante
+- Condition : Minimum 1 evaluation pour apparaitre
+- En cas d'egalite : Tri secondaire par nombre d'evaluations
+
+Donnees supplementaires :
+- Note moyenne mise en evidence
+- Nombre total d'evaluations
+
+
+FONCTIONNALITE F05 : SELECTION PAR THEME
+----------------------------------------
+Description : Filtre les ressources par theme
+URL : ?controller=catalogue&action=selection&theme=ID
+Acteurs : Tous
+
+Specifications :
+- Affiche le nom du theme selectionne
+- Liste toutes les ressources associees au theme
+- Tri par date d'ajout
+
+
+FONCTIONNALITE F06 : RECHERCHE AVANCEE
+--------------------------------------
+Description : Recherche multicritere de ressources
+URL : ?controller=catalogue&action=search
+Acteurs : Tous
+
+Criteres de recherche (tous optionnels) :
+- Mot-cle : Recherche dans titre, auteur/realisateur, resume
+- Type : Livre ou Film
+- Genre : Selection dans la liste des genres
+- Theme : Selection dans la liste des themes
+- Annee minimum : Borne inferieure de la plage
+- Annee maximum : Borne superieure de la plage
+
+Regles de gestion :
+- Les criteres sont combines avec un ET logique
+- La recherche textuelle utilise LIKE avec jokers
+- Les resultats sont tries par pertinence (date d'ajout)
+
+
+FONCTIONNALITE F07 : DETAIL D'UNE RESSOURCE
+-------------------------------------------
+Description : Affiche toutes les informations d'une ressource
+URL : ?controller=ressource&action=show&id=ID
+Acteurs : Tous
+
+Donnees affichees (communes) :
+- Image de couverture (grande taille)
+- Titre
+- Auteur (livre) ou Realisateur (film)
+- Annee de publication
+- Pays d'origine
+- Resume complet
+- Genres associes (badges cliquables)
+- Themes associes (badges cliquables)
+- Note moyenne avec representation graphique (etoiles)
+- Nombre total d'evaluations
+
+Donnees specifiques aux LIVRES :
+- ISBN (13 chiffres)
+- Editeur
+- Nombre de pages
+- Prix
+- Langue
+
+Donnees specifiques aux FILMS :
+- Duree (en minutes, formatee en h:mm)
+- Support (DVD, Blu-ray, Streaming)
+- Langue
+- Sous-titres disponibles
+- Propose par (Arte, UniversCine, CNC, Mediatheque numerique)
+- Casting (liste des acteurs)
+
+Section Evaluations :
+- Liste des evaluations triees par date (recentes en premier)
+- Pour chaque evaluation :
+  * Nom et prenom de l'utilisateur
+  * Note attribuee (etoiles)
+  * Texte de la critique
+  * Date de l'evaluation
+- Bouton de suppression (administrateurs uniquement)
+
+
+3.2 DESCRIPTION DES FONCTIONNALITES AUTHENTIFIEES
+--------------------------------------------------------------------------------
+
+FONCTIONNALITE F08 : INSCRIPTION
+--------------------------------
+Description : Creation d'un compte utilisateur
+URL : ?controller=auth&action=register
+Acteurs : Visiteurs non connectes
+
+Champs du formulaire :
+- Nom (obligatoire, max 100 caracteres)
+- Prenom (obligatoire, max 100 caracteres)
+- Email (obligatoire, format valide, unique)
+- Mot de passe (obligatoire, min 8 caracteres)
+- Confirmation mot de passe (obligatoire, identique)
+
+Validations :
+- Email au format valide (filter_var FILTER_VALIDATE_EMAIL)
+- Email non deja utilise dans la base
+- Mots de passe identiques
+- Longueur minimale du mot de passe respectee
+
+Traitement :
+- Hachage du mot de passe avec bcrypt (password_hash)
+- Attribution du role "utilisateur" par defaut
+- Enregistrement de la date d'inscription
+- Redirection vers la page de connexion avec message de succes
+
+
+FONCTIONNALITE F09 : CONNEXION
+------------------------------
+Description : Authentification d'un utilisateur
+URL : ?controller=auth&action=login
+Acteurs : Visiteurs non connectes
+
+Champs du formulaire :
+- Email (obligatoire)
+- Mot de passe (obligatoire)
+
+Traitement :
+- Recherche de l'utilisateur par email
+- Verification du mot de passe avec password_verify
+- Si succes : Creation de la session utilisateur
+- Si echec : Message d'erreur generique (securite)
+
+Donnees stockees en session :
+- id_utilisateur
+- nom
+- prenom
+- email
+- role
+
+
+FONCTIONNALITE F10 : DECONNEXION
+--------------------------------
+Description : Fermeture de la session utilisateur
+URL : ?controller=auth&action=logout
+Acteurs : Utilisateurs connectes
+
+Traitement :
+- Destruction de la session (session_destroy)
+- Redirection vers la page d'accueil
+- Message de confirmation
+
+
+FONCTIONNALITE F11 : EVALUATION D'UNE RESSOURCE
+-----------------------------------------------
+Description : Permet a un utilisateur d'evaluer une ressource
+URL : ?controller=evaluation&action=create&id_ressource=ID
+Acteurs : Utilisateurs connectes
+
+Champs du formulaire :
+- Note : Selection de 0 a 5 etoiles (obligatoire)
+- Critique : Zone de texte (optionnel, max 1000 caracteres)
+
+Contraintes :
+- L'utilisateur doit etre connecte
+- Une seule evaluation par utilisateur par ressource
+- La note doit etre entre 0.0 et 5.0
+
+Traitement :
+- Verification que l'utilisateur n'a pas deja evalue
+- Insertion de l'evaluation avec la date courante
+- Redirection vers la page de la ressource
+- Message de confirmation
+
+Affichage :
+- Si l'utilisateur a deja evalue : Message informatif
+- Le formulaire n'est affiche que si l'evaluation est possible
+
+
+3.3 DESCRIPTION DES FONCTIONNALITES D'ADMINISTRATION
+--------------------------------------------------------------------------------
+
+FONCTIONNALITE F12 : DASHBOARD ADMINISTRATION
+---------------------------------------------
+Description : Tableau de bord avec statistiques
+URL : ?controller=admin&action=index
+Acteurs : Bibliothecaires, Administrateurs
+
+Statistiques affichees :
+- Nombre total de ressources
+- Nombre de livres
+- Nombre de films
+- Nombre d'evaluations
+- Nombre de genres
+- Nombre de themes
+
+Sections additionnelles :
+- Top 5 des ressources les mieux notees
+- 10 dernieres evaluations avec details
+
+
+FONCTIONNALITE F13 : GESTION DES LIVRES
+---------------------------------------
+Description : CRUD complet sur les livres
+URLs :
+- Liste : ?controller=livre&action=index
+- Creation : ?controller=livre&action=create
+- Modification : ?controller=livre&action=edit&id=ID
+- Suppression : ?controller=livre&action=delete&id=ID
+Acteurs : Bibliothecaires, Administrateurs
+
+Champs du formulaire :
+Informations ressource :
+- Titre (obligatoire, max 255 caracteres)
+- Auteur (obligatoire, max 255 caracteres)
+- Annee (obligatoire, 1800-2100)
+- Resume (optionnel, max 5000 caracteres)
+- URL image (optionnel)
+- Pays (optionnel)
+
+Informations livre :
+- ISBN (obligatoire, 13 chiffres, unique)
+- Editeur (obligatoire)
+- Nombre de pages (obligatoire, 1-10000)
+- Prix (optionnel)
+- Langue (optionnel, defaut "Francais")
+
+Associations :
+- Genres (checkboxes, selection multiple)
+- Themes (checkboxes, selection multiple)
+
+Traitement creation/modification :
+- Transaction SQL pour garantir l'integrite
+- Insertion/mise a jour dans table ressource
+- Insertion/mise a jour dans table livre
+- Gestion des associations genres/themes
+- Commit si succes, Rollback si erreur
+
+
+FONCTIONNALITE F14 : GESTION DES FILMS
+--------------------------------------
+Description : CRUD complet sur les films
+URLs :
+- Liste : ?controller=film&action=index
+- Creation : ?controller=film&action=create
+- Modification : ?controller=film&action=edit&id=ID
+- Suppression : ?controller=film&action=delete&id=ID
+Acteurs : Bibliothecaires, Administrateurs
+
+Champs du formulaire :
+Informations ressource :
+- Titre (obligatoire)
+- Realisateur (obligatoire)
+- Annee (obligatoire, 1800-2100)
+- Resume (optionnel)
+- URL image (optionnel)
+- Pays (optionnel)
+
+Informations film :
+- Duree en minutes (obligatoire, 1-1000)
+- Support (obligatoire : DVD, Blu-ray, Streaming)
+- Langue (obligatoire)
+- Sous-titres (optionnel)
+- Propose par (optionnel : Arte, UniversCine, CNC, Mediatheque numerique)
+- Casting (optionnel)
+
+Associations :
+- Genres (checkboxes)
+- Themes (checkboxes)
+
+
+FONCTIONNALITE F15 : GESTION DES GENRES
+---------------------------------------
+Description : CRUD sur les genres
+URLs :
+- Liste : ?controller=genre&action=index
+- Creation : ?controller=genre&action=create
+- Modification : ?controller=genre&action=edit&id=ID
+- Suppression : ?controller=genre&action=delete&id=ID
+Acteurs : Administrateurs uniquement
+
+Champs :
+- Nom (obligatoire, unique, max 100 caracteres)
+
+Contraintes :
+- Unicite du nom de genre
+- Suppression en cascade des associations
+
+
+FONCTIONNALITE F16 : GESTION DES THEMES
+---------------------------------------
+Description : CRUD sur les themes
+URLs : Similaires aux genres
+Acteurs : Administrateurs uniquement
+
+Champs :
+- Nom (obligatoire, unique, max 100 caracteres)
+
+
+FONCTIONNALITE F17 : SUPPRESSION D'EVALUATIONS
+----------------------------------------------
+Description : Moderation des evaluations
+URL : ?controller=admin&action=deleteEvaluation&id=ID
+Acteurs : Administrateurs uniquement
+
+Traitement :
+- Verification du role administrateur
+- Suppression de l'evaluation
+- Redirection vers la page de la ressource
+
+
+3.4 CONTRAINTES FONCTIONNELLES ET REGLES DE GESTION
+--------------------------------------------------------------------------------
+
+REGLES RELATIVES AUX UTILISATEURS :
+- RG01 : Un email ne peut etre utilise que pour un seul compte
+- RG02 : Le mot de passe doit contenir au minimum 8 caracteres
+- RG03 : Un utilisateur ne peut avoir qu'un seul role a la fois
+- RG04 : Le role par defaut a l'inscription est "utilisateur"
+
+REGLES RELATIVES AUX RESSOURCES :
+- RG05 : Une ressource est soit un livre soit un film (pas les deux)
+- RG06 : Le titre et l'auteur/realisateur sont obligatoires
+- RG07 : L'annee doit etre comprise entre 1800 et 2100
+- RG08 : L'ISBN d'un livre doit etre unique et contenir 13 chiffres
+- RG09 : La duree d'un film est exprimee en minutes (1-1000)
+- RG10 : Le support d'un film est limite a DVD, Blu-ray ou Streaming
+
+REGLES RELATIVES AUX EVALUATIONS :
+- RG11 : Un utilisateur ne peut evaluer qu'une seule fois chaque ressource
+- RG12 : La note est comprise entre 0.0 et 5.0
+- RG13 : La critique est limitee a 1000 caracteres
+- RG14 : La critique est optionnelle, la note est obligatoire
+- RG15 : Seuls les administrateurs peuvent supprimer des evaluations
+
+REGLES RELATIVES AUX REFERENTIELS :
+- RG16 : Les noms de genres doivent etre uniques
+- RG17 : Les noms de themes doivent etre uniques
+- RG18 : Une ressource peut avoir plusieurs genres
+- RG19 : Une ressource peut avoir plusieurs themes
+
+REGLES DE SECURITE :
+- RG20 : Les mots de passe sont stockes haches (bcrypt)
+- RG21 : Toutes les requetes SQL utilisent des prepared statements
+- RG22 : Tous les affichages sont proteges contre XSS
+- RG23 : L'acces aux fonctions d'administration est controle par role
+
+
+================================================================================
+                      4. SPECIFICATION TECHNIQUE
+================================================================================
+
+4.1 ARCHITECTURE LOGICIELLE
+--------------------------------------------------------------------------------
+
+4.1.1 PRESENTATION DETAILLEE DE L'ARCHITECTURE MVC
+--------------------------------------------------
+
+L'application E-Library suit strictement le patron d'architecture MVC
+(Model-View-Controller) qui permet de separer les responsabilites :
+
+SEPARATION DES RESPONSABILITES :
+
++-------------------+     +-------------------+     +-------------------+
+|    CONTROLEUR     |     |      MODELE       |     |        VUE        |
++-------------------+     +-------------------+     +-------------------+
+| - Reception des   |     | - Acces donnees   |     | - Generation HTML |
+|   requetes HTTP   |     | - Logique metier  |     | - Affichage       |
+| - Validation      |     | - Validation      |     | - Protection XSS  |
+| - Orchestration   |     | - Requetes SQL    |     | - Templates       |
+| - Redirection     |     | - Transactions    |     | - Layout          |
++-------------------+     +-------------------+     +-------------------+
+         |                         |                         |
+         v                         v                         v
+   Gere le flux              Gere les donnees          Genere l'interface
+
+
+4.1.2 DESCRIPTION DU FRAMEWORK PHP MAISON
+-----------------------------------------
+
+Le framework maison se compose de 5 classes de base situees dans le
+dossier core/ :
+
+CLASSE : Router (core/Router.php)
+---------------------------------
+Role : Analyse l'URL et dispatche vers le controleur/action approprie
+
+Methodes :
++------------------------------------------------------------------+
+| dispatch($controller, $action)                                    |
++------------------------------------------------------------------+
+| Parametres : string $controller, string $action                   |
+| Retour     : void                                                 |
+| Description: Charge le controleur, verifie l'existence de la     |
+|             methode et l'execute                                  |
++------------------------------------------------------------------+
+| error404()                                                        |
++------------------------------------------------------------------+
+| Parametres : aucun                                                |
+| Retour     : void                                                 |
+| Description: Affiche la page d'erreur 404                         |
++------------------------------------------------------------------+
+
+Fonctionnement :
+1. Construction du nom de classe : ucfirst($controller) . 'Controller'
+2. Verification de l'existence du fichier controleur
+3. Verification de l'existence de la classe
+4. Verification de l'existence de la methode
+5. Instanciation et appel de la methode
+
+
+CLASSE : Controller (core/Controller.php)
+-----------------------------------------
+Role : Classe de base pour tous les controleurs
+
+Methodes protegees :
++------------------------------------------------------------------+
+| render($view, $data = [], $title = null)                         |
++------------------------------------------------------------------+
+| Parametres : string $view, array $data, string $title            |
+| Retour     : void                                                 |
+| Description: Rend une vue avec le layout principal               |
+|             - Extrait les donnees pour les rendre accessibles    |
+|             - Capture le contenu de la vue                       |
+|             - Inclut le layout qui affiche $content              |
++------------------------------------------------------------------+
+| renderWithoutLayout($view, $data = [])                           |
++------------------------------------------------------------------+
+| Parametres : string $view, array $data                           |
+| Retour     : void                                                 |
+| Description: Rend une vue sans layout (AJAX, fragments)          |
++------------------------------------------------------------------+
+
+
+CLASSE : Model (core/Model.php)
+-------------------------------
+Role : Classe abstraite de base pour tous les modeles
+
+Proprietes protegees :
+- $pdo : Instance PDO de connexion a la base
+- $table : Nom de la table associee au modele
+
+Methodes (a implementer dans les classes filles) :
+- findAll() : Recupere tous les enregistrements
+- findById($id) : Recupere un enregistrement par ID
+- create($data) : Cree un nouvel enregistrement
+- update($id, $data) : Met a jour un enregistrement
+- delete($id) : Supprime un enregistrement
+
+
+CLASSE : Database (core/Database.php)
+-------------------------------------
+Role : Singleton gerant la connexion PDO
+
+Pattern : Singleton (une seule instance partagee)
+
+Methodes statiques :
++------------------------------------------------------------------+
+| getInstance() : PDO                                               |
++------------------------------------------------------------------+
+| Description: Retourne l'instance unique de PDO                    |
+|             Cree la connexion si elle n'existe pas               |
++------------------------------------------------------------------+
+| getPDO() : PDO                                                    |
++------------------------------------------------------------------+
+| Description: Alias de getInstance() pour compatibilite            |
++------------------------------------------------------------------+
+| isConnected() : bool                                              |
++------------------------------------------------------------------+
+| Description: Verifie si la connexion est etablie                  |
++------------------------------------------------------------------+
+
+Configuration PDO :
+- Mode erreur : PDO::ERRMODE_EXCEPTION
+- Mode fetch : PDO::FETCH_ASSOC
+- Charset : utf8mb4
+- Requetes preparees natives (non emulees)
+
+
+CLASSE : Auth (core/Auth.php)
+-----------------------------
+Role : Gestion de l'authentification et des autorisations
+
+Methodes statiques :
++------------------------------------------------------------------+
+| check() : bool                                                    |
++------------------------------------------------------------------+
+| Description: Verifie si un utilisateur est connecte               |
+|             Retourne true si $_SESSION['user'] est defini        |
++------------------------------------------------------------------+
+| user() : array|null                                               |
++------------------------------------------------------------------+
+| Description: Retourne les donnees de l'utilisateur connecte       |
++------------------------------------------------------------------+
+| hasRole($role) : bool                                             |
++------------------------------------------------------------------+
+| Parametres : string $role                                         |
+| Description: Verifie si l'utilisateur a le role specifie          |
++------------------------------------------------------------------+
+| requireAuth() : void                                              |
++------------------------------------------------------------------+
+| Description: Requiert une authentification                        |
+|             Redirige vers login si non connecte                  |
++------------------------------------------------------------------+
+| requireRole($role) : void                                         |
++------------------------------------------------------------------+
+| Parametres : string $role                                         |
+| Description: Requiert un role specifique                          |
+|             Redirige vers login si role incorrect                |
++------------------------------------------------------------------+
+| isStaff() : bool                                                  |
++------------------------------------------------------------------+
+| Description: Verifie si admin ou bibliothecaire                   |
++------------------------------------------------------------------+
+| requireStaff() : void                                             |
++------------------------------------------------------------------+
+| Description: Requiert le role staff (admin ou bibliothecaire)     |
++------------------------------------------------------------------+
+
+
+4.1.3 DESCRIPTION DU SYSTEME DE ROUTAGE
+---------------------------------------
+
+Format des URLs :
+index.php?controller=NOM&action=METHODE&param=VALEUR
+
+Exemples de routage :
++------------------------------------------------+----------------------------------+
+| URL                                            | Methode appelee                  |
++------------------------------------------------+----------------------------------+
+| index.php                                      | HomeController::index()          |
+| index.php?controller=auth&action=login         | AuthController::login()          |
+| index.php?controller=ressource&action=show&id=5| RessourceController::show()      |
+| index.php?controller=livre&action=create       | LivreController::create()        |
+| index.php?controller=admin&action=index        | AdminController::index()         |
++------------------------------------------------+----------------------------------+
+
+Securite du routeur :
+- Validation des noms de controleur et action (caracteres alphanumeriques)
+- Verification de l'existence du fichier controleur
+- Verification de l'existence de la classe
+- Verification de l'existence de la methode
+- Page 404 personnalisee si route invalide
+
+
+4.2 DIAGRAMMES UML
+--------------------------------------------------------------------------------
+
+Les diagrammes UML suivants sont disponibles dans le dossier
+documentation/diagrammes/ au format PlantUML (.puml).
+
+Pour visualiser les diagrammes :
+- Utiliser l'extension PlantUML dans VS Code (Alt+D)
+- Utiliser le site https://www.plantuml.com/plantuml/uml/
+- Generer les images PNG : plantuml *.puml
+
+--------------------------------------------------------------------------------
+4.2.1 DIAGRAMME DE COMPOSANTS (Component Diagram)
+--------------------------------------------------------------------------------
+Fichier : documentation/diagrammes/06-component-diagram.puml
+
+DESCRIPTION :
+Ce diagramme presente l'architecture technique globale du systeme E-Library
+selon le pattern MVC. Il montre les differents composants et leurs interactions.
+
+COMPOSANTS REPRESENTES :
+
+1. Frontend
+   - Navigateur Web : Interface utilisateur (client)
+   - HTML/CSS/JS : Technologies de presentation
+
+2. Backend PHP
+   - index.php (Router) : Point d'entree et Front Controller
+   - MVC :
+     * Controllers : Logique de controle
+     * Models : Acces aux donnees et logique metier
+     * Views : Templates de presentation
+   - Auth : Middleware d'authentification
+   - Database : Singleton de connexion PDO
+
+3. Base de donnees
+   - MySQL : Serveur de base de donnees
+
+FLUX DE DONNEES :
+Browser --> Router (HTTP)
+Router --> Controllers
+Controllers --> Models
+Controllers --> Views
+Controllers ..> Auth (utilise)
+Models --> Database
+Database --> MySQL
+
+LIEN AVEC LE CODE :
+- index.php : Point d'entree principal
+- core/Router.php : Dispatch des requetes
+- core/Controller.php : Classe de base des controleurs
+- core/Model.php : Classe de base des modeles
+- core/Auth.php : Gestion authentification
+- core/Database.php : Singleton connexion PDO
+
+--------------------------------------------------------------------------------
+4.2.2 DIAGRAMME DE CAS D'UTILISATION (Use Case Diagram)
+--------------------------------------------------------------------------------
+Fichiers :
+- documentation/diagrammes/01a-use-case-front.puml (Front Office)
+- documentation/diagrammes/01b-use-case-back.puml (Back Office)
+
+DESCRIPTION :
+Ces diagrammes presentent les cas d'utilisation du systeme selon deux vues :
+- Front Office : Fonctionnalites publiques et utilisateurs
+- Back Office : Fonctionnalites d'administration
+
+FRONT OFFICE - ACTEURS ET CAS D'UTILISATION :
+
+Acteurs :
+- Visiteur : Utilisateur non connecte
+- Utilisateur : Visiteur connecte (herite de Visiteur)
+
+Cas d'utilisation Visiteur :
+- UC1 : Consulter le catalogue
+- UC2 : Rechercher une ressource
+- UC3 : Voir les nouveautes
+- UC4 : Voir le top
+- UC5 : Consulter selection par theme
+- UC6 : Voir details ressource
+- UC7 : S'inscrire
+- UC8 : Se connecter
+
+Cas d'utilisation Utilisateur :
+- UC9 : Se deconnecter
+- UC10 : Evaluer une ressource
+- UC11 : Rediger une critique (extend UC10)
+- UC12 : Gerer son profil
+
+BACK OFFICE - ACTEURS ET CAS D'UTILISATION :
+
+Acteurs :
+- Bibliothecaire : Personnel de gestion
+- Administrateur : Herite de Bibliothecaire
+
+Cas d'utilisation Bibliothecaire :
+- UC20 : Gerer les livres
+- UC21 : Gerer les films
+- UC22 : Gerer les genres
+- UC23 : Gerer les themes
+- UC24 : Voir statistiques
+
+Relations include :
+- UC20/UC21 include UC25 (Creer ressource)
+- UC20/UC21 include UC26 (Modifier ressource)
+- UC20/UC21 include UC27 (Supprimer ressource)
+
+LIEN AVEC LE CODE :
+- HomeController : UC1, UC3, UC4
+- CatalogueController : UC2, UC3, UC4, UC5
+- RessourceController : UC6
+- AuthController : UC7, UC8, UC9
+- EvaluationController : UC10, UC11
+- LivreController : UC20, UC25, UC26, UC27 (livres)
+- FilmController : UC21, UC25, UC26, UC27 (films)
+- GenreController : UC22
+- ThemeController : UC23
+- AdminController : UC24
+
+--------------------------------------------------------------------------------
+4.2.3 DIAGRAMMES DE SEQUENCE (Sequence Diagrams)
+--------------------------------------------------------------------------------
+
+DIAGRAMME 1 : AUTHENTIFICATION
+Fichier : documentation/diagrammes/03-sequence-authentification.puml
+
+DESCRIPTION :
+Ce diagramme illustre les trois scenarios d'authentification :
+inscription, connexion et deconnexion.
+
+SCENARIO INSCRIPTION :
+1. Utilisateur -> Router : POST /auth/register
+2. Router -> AuthController : register()
+3. Controller -> Controller : Valider donnees
+4. alt Validation echouee
+     Controller -> Utilisateur : Afficher erreurs
+   else Validation reussie
+     Controller -> UtilisateurModel : findByEmail(email)
+     Model -> Database : SELECT * FROM utilisateur WHERE email = ?
+     Database -> Model : Resultat
+     Model -> Controller : null (email disponible)
+     Controller -> Model : create(data)
+     Model -> Model : password_hash(password)
+     Model -> Database : INSERT INTO utilisateur
+     Database -> Model : ID nouvel utilisateur
+     Model -> Controller : true
+     Controller -> Utilisateur : Redirection /auth/login
+   end
+
+SCENARIO CONNEXION :
+1. Utilisateur -> Router : POST /auth/login
+2. Router -> AuthController : login()
+3. Controller -> Model : findByEmail(email)
+4. Model -> Database : SELECT * FROM utilisateur WHERE email = ?
+5. Database -> Model : Donnees utilisateur
+6. Model -> Controller : userData
+7. Controller -> Controller : password_verify(password, hash)
+8. alt Mot de passe invalide
+     Controller -> Utilisateur : Message erreur
+   else Mot de passe valide
+     Controller -> Auth : Creer session
+     Auth -> Auth : $_SESSION['user'] = userData
+     Controller -> Utilisateur : Redirection /
+   end
+
+SCENARIO DECONNEXION :
+1. Utilisateur -> Router : GET /auth/logout
+2. Router -> AuthController : logout()
+3. Controller -> Auth : Detruire session
+4. Auth -> Auth : session_destroy()
+5. Controller -> Utilisateur : Redirection /
+
+LIEN AVEC LE CODE :
+- AuthController::registerPost() : Traitement inscription
+- AuthController::loginPost() : Traitement connexion
+- AuthController::logout() : Deconnexion
+- Utilisateur::findByEmail() : Recherche par email
+- Utilisateur::createUser() : Creation utilisateur
+- Utilisateur::verifyCredentials() : Verification mot de passe
+
+
+DIAGRAMME 2 : EVALUATION D'UNE RESSOURCE
+Fichier : documentation/diagrammes/04-sequence-evaluation.puml
+
+DESCRIPTION :
+Ce diagramme illustre le processus d'evaluation d'une ressource par
+un utilisateur connecte.
+
+SEQUENCE :
+1. Utilisateur -> Router : GET /ressource/show/5
+2. Router -> Auth : check()
+3. Auth -> Router : true (connecte)
+4. Router -> RessourceController : show(5)
+5. Controller -> RessourceModel : findById(5)
+6. Model -> Database : SELECT ressource + livre/film WHERE id = 5
+7. Database -> Model : Donnees ressource
+8. Model -> Controller : ressource
+9. Controller -> RessourceModel : getEvaluations(5)
+10. Model -> Database : SELECT evaluation + utilisateur WHERE id_ressource = 5
+11. Database -> Model : Liste evaluations
+12. Model -> Controller : evaluations[]
+13. Controller -> EvaluationModel : hasUserEvaluated(userId, 5)
+14. Model -> Database : SELECT COUNT(*) WHERE user=? AND ressource=5
+15. Database -> Model : 0 (pas encore evalue)
+16. Model -> Controller : false
+17. Controller -> Utilisateur : Afficher page avec formulaire evaluation
+
+SOUMISSION EVALUATION :
+1. Utilisateur -> Router : POST /evaluation/create
+2. Router -> Auth : requireAuth()
+3. Auth -> Router : OK (authentifie)
+4. Router -> EvaluationController : create()
+5. Controller -> Controller : Valider donnees (note: 0-5)
+6. alt Validation echouee
+     Controller -> Utilisateur : Afficher erreurs
+   else Validation reussie
+     Controller -> EvaluationModel : hasUserEvaluated(userId, ressourceId)
+     Model -> Database : SELECT COUNT(*)
+     Database -> Model : 0
+     Model -> Controller : false
+     alt Utilisateur a deja evalue
+       Controller -> Utilisateur : Erreur : deja evalue
+     else Premiere evaluation
+       Controller -> EvaluationModel : create(data)
+       Model -> Database : BEGIN TRANSACTION
+       Model -> Database : INSERT INTO evaluation
+       Database -> Model : ID evaluation
+       Model -> Database : COMMIT
+       Model -> Controller : true
+       Controller -> Utilisateur : Redirection vers ressource
+     end
+   end
+
+LIEN AVEC LE CODE :
+- EvaluationController::createPost() : Traitement evaluation
+- Evaluation::hasUserEvaluated() : Verification doublons
+- Evaluation::createEvaluation() : Creation evaluation
+- Ressource::getEvaluations() : Recuperation evaluations
+
+
+DIAGRAMME 3 : CREATION D'UN LIVRE (CRUD)
+Fichier : documentation/diagrammes/05-sequence-crud-livre.puml
+
+DESCRIPTION :
+Ce diagramme illustre le processus de creation d'un livre par un
+membre du staff (bibliothecaire ou administrateur).
+
+AFFICHAGE DU FORMULAIRE :
+1. Bibliothecaire -> Router : GET /livre/create
+2. Router -> Auth : requireStaff()
+3. alt Non autorise
+     Auth -> Bibliothecaire : Redirection / Message erreur
+   else Autorise
+     Auth -> Router : OK
+     Router -> LivreController : create()
+     Controller -> GenreModel : getAll()
+     Model -> Database : SELECT * FROM genre
+     Database -> Model : Liste genres
+     Model -> Controller : genres[]
+     Controller -> ThemeModel : getAll()
+     Model -> Database : SELECT * FROM theme
+     Database -> Model : Liste themes
+     Model -> Controller : themes[]
+     Controller -> Bibliothecaire : Afficher formulaire avec genres et themes
+   end
+
+SOUMISSION DU FORMULAIRE :
+1. Bibliothecaire -> Router : POST /livre/store
+2. Router -> Auth : requireStaff()
+3. Auth -> Router : OK
+4. Router -> LivreController : store()
+5. Controller -> LivreModel : validate(data)
+6. Model -> Model : Verifier : titre non vide, ISBN 13 chiffres, annee 1800-2100
+7. Model -> Controller : errors[] ou true
+8. alt Validation echouee
+     Controller -> Bibliothecaire : Reafficher formulaire avec erreurs
+   else Validation reussie
+     Controller -> Database : BEGIN TRANSACTION
+     Controller -> LivreModel : createRessource(data)
+     Model -> Database : INSERT INTO ressource (type='livre', titre, auteur, ...)
+     Database -> Model : id_ressource
+     Model -> Controller : ressourceId
+     Controller -> LivreModel : createLivre(ressourceId, data)
+     Model -> Database : INSERT INTO livre (id_ressource, isbn, editeur, ...)
+     Database -> Model : Success
+     Model -> Controller : true
+     loop Pour chaque genre selectionne
+       Controller -> LivreModel : associateGenre(ressourceId, genreId)
+       Model -> Database : INSERT INTO ressource_genre
+     end
+     loop Pour chaque theme selectionne
+       Controller -> LivreModel : associateTheme(ressourceId, themeId)
+       Model -> Database : INSERT INTO ressource_theme
+     end
+     Controller -> Database : COMMIT
+     Controller -> Bibliothecaire : Redirection /admin/livres Message succes
+   end
+
+LIEN AVEC LE CODE :
+- LivreController::create() : Affichage formulaire
+- LivreController::createPost() : Traitement creation
+- Livre::create() : Creation avec transaction
+- Livre::isbnExists() : Verification unicite ISBN
+- Genre::getAll() : Liste des genres
+- Theme::getAll() : Liste des themes
+
+--------------------------------------------------------------------------------
+4.2.4 DIAGRAMME DE PACKAGES (Package Diagram)
+--------------------------------------------------------------------------------
+Fichier : documentation/diagrammes/07-package-diagram.puml
+
+DESCRIPTION :
+Ce diagramme presente l'organisation du code source en packages (dossiers)
+et leurs dependances.
+
+STRUCTURE DES PACKAGES :
+
+mediatheque/
+|
++-- config/
+|   +-- config.php (Configuration BDD)
+|
++-- core/
+|   +-- Controller.php
+|   +-- Model.php
+|   +-- Database.php
+|   +-- Auth.php
+|   +-- Router.php
+|
++-- app/
+|   +-- controllers/
+|   |   +-- 10 Controllers
+|   +-- models/
+|   |   +-- 7 Models
+|   +-- views/
+|       +-- Layout + Partials
+|       +-- 30+ Templates
+|
++-- public/
+|   +-- css/
+|   |   +-- style.css
+|   +-- js/
+|   |   +-- scripts
+|   +-- img/
+|       +-- images
+|
++-- sql/
+|   +-- schema.sql
+|   +-- data.sql
+|
++-- documentation/
+|   +-- README.md
+|   +-- Diagrammes UML
+|   +-- Guides
+|
++-- index.php (Point d'entree)
+
+DEPENDANCES ENTRE PACKAGES :
+- index.php --> Router.php
+- Router.php --> controllers/
+- controllers/ --> models/
+- controllers/ --> views/
+- models/ --> Database.php
+- Database.php --> config.php
+- controllers/ --> Auth.php
+
+LIEN AVEC LE CODE :
+Chaque package correspond a un dossier physique du projet.
+Les dependances representent les require/include entre fichiers.
+
+--------------------------------------------------------------------------------
+4.2.5 DIAGRAMME DE CLASSES (Class Diagram)
+--------------------------------------------------------------------------------
+Fichiers :
+- documentation/diagrammes/02a-class-core.puml (Core Framework)
+- documentation/diagrammes/02b-class-models.puml (Models)
+- documentation/diagrammes/02c-class-controllers.puml (Controllers)
+
+DESCRIPTION :
+Ces diagrammes presentent la structure des classes du systeme, leurs
+attributs, methodes et relations.
+
+CLASSES DU CORE FRAMEWORK :
+
++------------------------------------------------------------------+
+| <<abstract>> Controller                                           |
++------------------------------------------------------------------+
+| + render(view: string, data: array, title: string): void         |
+| + renderWithoutLayout(view: string, data: array): void           |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| <<abstract>> Model                                                |
++------------------------------------------------------------------+
+| # pdo: PDO                                                        |
+| # table: string                                                   |
++------------------------------------------------------------------+
+| + __construct()                                                   |
+| + findAll(): array                                               |
+| + findById(id: int): array|false                                 |
+| + create(data: array): int                                       |
+| + update(id: int, data: array): bool                             |
+| + delete(id: int): bool                                          |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| Router                                                            |
++------------------------------------------------------------------+
+| + dispatch(controller: string, action: string): void             |
+| - error404(): void                                               |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| <<static>> Auth                                                   |
++------------------------------------------------------------------+
+| {static} + check(): bool                                         |
+| {static} + user(): array|null                                    |
+| {static} + hasRole(role: string): bool                           |
+| {static} + requireRole(role: string): void                       |
+| {static} + requireAuth(): void                                   |
+| {static} + isStaff(): bool                                       |
+| {static} + requireStaff(): void                                  |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| <<Singleton>> Database                                            |
++------------------------------------------------------------------+
+| {static} - instance: PDO|null                                    |
++------------------------------------------------------------------+
+| {static} + getInstance(): PDO                                    |
+| {static} + getPDO(): PDO                                         |
+| - __construct()                                                   |
+| - __clone()                                                       |
++------------------------------------------------------------------+
+
+CLASSES MODELES (COUCHE METIER) :
+
++------------------------------------------------------------------+
+| Utilisateur extends Model                                         |
++------------------------------------------------------------------+
+| + findByEmail(email: string): array|false                        |
+| + createUser(data: array): array|false                           |
+| + verifyCredentials(email, password): array|false                |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| Ressource extends Model                                           |
++------------------------------------------------------------------+
+| + getAll(): array                                                |
+| + findById(id: int): array|false                                 |
+| + getAverageRating(id: int): float                               |
+| + getGenres(id: int): array                                      |
+| + getThemes(id: int): array                                      |
+| + getEvaluations(id: int): array                                 |
+| + getNewest(limit: int): array                                   |
+| + getTopRated(limit: int): array                                 |
+| + getByTheme(idTheme: int): array                                |
+| + search(criteria: array): array                                 |
+| {static} + buildImagePath(ressource: array): string              |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| Livre extends Model                                               |
++------------------------------------------------------------------+
+| + getAllWithDetails(): array                                     |
+| + findByIdWithDetails(id: int): array|false                      |
+| + isbnExists(isbn: string, excludeId: int): bool                 |
+| + getGenreIds(id: int): array                                    |
+| + getThemeIds(id: int): array                                    |
+| + create(data: array): int                                       |
+| + update(id: int, data: array): bool                             |
+| + delete(id: int): bool                                          |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| Film extends Model                                                |
++------------------------------------------------------------------+
+| + getAllWithDetails(): array                                     |
+| + create(data: array): int                                       |
+| + update(id: int, data: array): bool                             |
+| + delete(id: int): bool                                          |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| Genre extends Model                                               |
++------------------------------------------------------------------+
+| + getAll(): array                                                |
+| + findById(id: int): array|false                                 |
+| + existsByName(nom: string): bool                                |
+| + create(nom: string): int                                       |
+| + update(id: int, nom: string): bool                             |
+| + delete(id: int): bool                                          |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| Theme extends Model                                               |
++------------------------------------------------------------------+
+| + getAll(): array                                                |
+| + findById(id: int): array|false                                 |
+| + create(nom: string): int                                       |
+| + update(id: int, nom: string): bool                             |
+| + delete(id: int): bool                                          |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| Evaluation extends Model                                          |
++------------------------------------------------------------------+
+| + hasUserEvaluated(idUser: int, idRessource: int): bool          |
+| + createEvaluation(idUser, idRessource, note, critique): bool    |
+| + getAverage(idRessource: int): float|null                       |
+| + countForRessource(idRessource: int): int                       |
+| + getByRessource(idRessource: int): array                        |
+| + deleteEvaluation(id: int): bool                                |
+| + getLatest(limit: int): array                                   |
++------------------------------------------------------------------+
+
+CLASSES CONTROLEURS :
+
++------------------------------------------------------------------+
+| HomeController extends Controller                                 |
++------------------------------------------------------------------+
+| - ressourceModel: Ressource                                      |
+| - themeModel: Theme                                              |
+| - evaluationModel: Evaluation                                    |
++------------------------------------------------------------------+
+| + index(): void                                                  |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| AuthController extends Controller                                 |
++------------------------------------------------------------------+
+| - userModel: Utilisateur                                         |
++------------------------------------------------------------------+
+| + login(): void                                                  |
+| + loginPost(): void                                              |
+| + register(): void                                               |
+| + registerPost(): void                                           |
+| + logout(): void                                                 |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| CatalogueController extends Controller                            |
++------------------------------------------------------------------+
+| - ressourceModel: Ressource                                      |
+| - genreModel: Genre                                              |
+| - themeModel: Theme                                              |
++------------------------------------------------------------------+
+| + index(): void                                                  |
+| + nouveautes(): void                                             |
+| + top(): void                                                    |
+| + selection(): void                                              |
+| + search(): void                                                 |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| RessourceController extends Controller                            |
++------------------------------------------------------------------+
+| - ressourceModel: Ressource                                      |
+| - evaluationModel: Evaluation                                    |
++------------------------------------------------------------------+
+| + show(): void                                                   |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| EvaluationController extends Controller                           |
++------------------------------------------------------------------+
+| - evaluationModel: Evaluation                                    |
++------------------------------------------------------------------+
+| + create(): void                                                 |
+| + createPost(): void                                             |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| LivreController extends Controller                                |
++------------------------------------------------------------------+
+| - livreModel: Livre                                              |
+| - genreModel: Genre                                              |
+| - themeModel: Theme                                              |
++------------------------------------------------------------------+
+| + index(): void                                                  |
+| + create(): void                                                 |
+| + createPost(): void                                             |
+| + edit(): void                                                   |
+| + editPost(): void                                               |
+| + delete(): void                                                 |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| FilmController extends Controller                                 |
++------------------------------------------------------------------+
+| - filmModel: Film                                                |
+| - genreModel: Genre                                              |
+| - themeModel: Theme                                              |
++------------------------------------------------------------------+
+| + index(): void                                                  |
+| + create(): void                                                 |
+| + createPost(): void                                             |
+| + edit(): void                                                   |
+| + editPost(): void                                               |
+| + delete(): void                                                 |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| GenreController extends Controller                                |
++------------------------------------------------------------------+
+| - genreModel: Genre                                              |
++------------------------------------------------------------------+
+| + index(): void                                                  |
+| + create(): void                                                 |
+| + createPost(): void                                             |
+| + edit(): void                                                   |
+| + editPost(): void                                               |
+| + delete(): void                                                 |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| ThemeController extends Controller                                |
++------------------------------------------------------------------+
+| - themeModel: Theme                                              |
++------------------------------------------------------------------+
+| + index(): void                                                  |
+| + create(): void                                                 |
+| + createPost(): void                                             |
+| + edit(): void                                                   |
+| + editPost(): void                                               |
+| + delete(): void                                                 |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+| AdminController extends Controller                                |
++------------------------------------------------------------------+
+| + index(): void                                                  |
+| + deleteEvaluation(): void                                       |
++------------------------------------------------------------------+
+
+RELATIONS ENTRE CLASSES :
+- Model ..> Database : utilise (association)
+- Controller ..> Auth : utilise (association)
+- Router ..> Controller : dispatche (dependance)
+- Utilisateur, Ressource, Livre, Film, etc. --|> Model : herite
+- HomeController, AuthController, etc. --|> Controller : herite
+
+
+4.3 SPECIFICATION DES COMPOSANTS
+--------------------------------------------------------------------------------
+
+4.3.1 DESCRIPTION DES CONTROLEURS MAJEURS
+-----------------------------------------
+
+HOMECONTROLLER
+--------------
+Fichier : app/controllers/HomeController.php
+Role : Gestion de la page d'accueil
+
+Dependances :
+- Ressource (model) : Recuperation des nouveautes et top notes
+- Theme (model) : Recuperation de la liste des themes
+- Evaluation (model) : Recuperation des derniers avis
+
+Methode principale :
+index() : Affiche la page d'accueil avec :
+- 8 dernieres ressources (nouveautes)
+- 8 ressources les mieux notees (top)
+- 5 derniers avis de la communaute
+- Liste des themes pour navigation
+
+AUTHCONTROLLER
+--------------
+Fichier : app/controllers/AuthController.php
+Role : Gestion de l'authentification
+
+Dependances :
+- Utilisateur (model) : Operations sur les comptes
+
+Methodes :
+- login() : Affiche le formulaire de connexion
+- loginPost() : Traite la soumission du formulaire
+- register() : Affiche le formulaire d'inscription
+- registerPost() : Traite la creation de compte
+- logout() : Detruit la session et deconnecte
+
+Securite :
+- Verification des identifiants avec password_verify()
+- Hachage des mots de passe avec password_hash()
+- Messages d'erreur generiques (pas de fuite d'information)
+
+CATALOGUECONTROLLER
+-------------------
+Fichier : app/controllers/CatalogueController.php
+Role : Gestion du catalogue et de la recherche
+
+Dependances :
+- Ressource (model) : Operations sur les ressources
+- Genre (model) : Liste des genres pour filtres
+- Theme (model) : Liste des themes pour filtres
+
+Methodes :
+- index() : Liste complete du catalogue
+- nouveautes() : 20 dernieres ressources
+- top() : Ressources triees par note
+- selection() : Filtrage par theme
+- search() : Recherche multicritere
+
+RESSOURCECONTROLLER
+-------------------
+Fichier : app/controllers/RessourceController.php
+Role : Affichage du detail d'une ressource
+
+Dependances :
+- Ressource (model) : Recuperation des details
+- Evaluation (model) : Recuperation des avis
+
+Methode principale :
+show() : Affiche tous les details d'une ressource avec :
+- Informations generales
+- Metadonnees specifiques (livre/film)
+- Genres et themes associes
+- Note moyenne et liste des evaluations
+- Formulaire d'evaluation si utilisateur connecte
+
+EVALUATIONCONTROLLER
+--------------------
+Fichier : app/controllers/EvaluationController.php
+Role : Gestion des evaluations utilisateurs
+
+Dependances :
+- Evaluation (model) : Operations CRUD sur evaluations
+
+Methodes :
+- create() : Affiche le formulaire (si pas deja evalue)
+- createPost() : Traite la soumission de l'evaluation
+
+Securite :
+- Verification authentification (Auth::requireAuth)
+- Verification unicite (une eval par user par ressource)
+- Validation de la note (0-5)
+
+LIVRECONTROLLER / FILMCONTROLLER
+---------------------------------
+Fichiers : app/controllers/LivreController.php, FilmController.php
+Role : CRUD sur les livres et films
+
+Dependances :
+- Livre/Film (model) : Operations CRUD
+- Genre (model) : Liste pour formulaires
+- Theme (model) : Liste pour formulaires
+
+Methodes :
+- index() : Liste des ressources
+- create() : Formulaire de creation
+- createPost() : Traitement creation
+- edit() : Formulaire de modification
+- editPost() : Traitement modification
+- delete() : Suppression
+
+Securite :
+- Verification role staff (Auth::requireStaff)
+- Validation des donnees
+- Transactions SQL pour integrite
+
+ADMINCONTROLLER
+---------------
+Fichier : app/controllers/AdminController.php
+Role : Dashboard et moderation
+
+Methodes :
+- index() : Affiche le dashboard avec statistiques
+- deleteEvaluation() : Supprime une evaluation (admin only)
+
+Securite :
+- Verification role staff pour dashboard
+- Verification role admin pour suppression evaluations
+
+
+4.3.2 DESCRIPTION DES MODELES PRINCIPAUX
+----------------------------------------
+
+UTILISATEUR (app/models/Utilisateur.php)
+----------------------------------------
+Table : utilisateur
+Role : Gestion des comptes utilisateurs
+
+Methodes cles :
+
+findByEmail($email) : array|false
+- Recherche un utilisateur par son email
+- Utilise pour verification unicite et connexion
+- Requete : SELECT * FROM utilisateur WHERE email = :email
+
+createUser($data) : array|false
+- Cree un nouvel utilisateur
+- Hache le mot de passe avec password_hash()
+- Retourne les donnees de l'utilisateur cree
+- Requete : INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role)
+
+verifyCredentials($email, $password) : array|false
+- Verifie les identifiants de connexion
+- Compare avec password_verify()
+- Retourne les donnees utilisateur si succes, false sinon
+
+
+RESSOURCE (app/models/Ressource.php)
+------------------------------------
+Table : ressource (+ livre/film en LEFT JOIN)
+Role : Gestion des ressources (livres et films)
+
+Methodes cles :
+
+getAll() : array
+- Recupere toutes les ressources avec jointures
+- LEFT JOIN sur livre et film pour metadonnees
+- Tri par date d'ajout decroissante
+
+findById($id) : array|false
+- Recupere une ressource par ID avec jointures
+- Inclut toutes les metadonnees specifiques
+
+getAverageRating($id) : float
+- Calcule la note moyenne d'une ressource
+- Retourne 0.0 si aucune evaluation
+- Arrondi a 1 decimale
+
+getGenres($id) : array
+- Recupere les genres associes a une ressource
+- JOIN avec table ressource_genre
+
+getThemes($id) : array
+- Recupere les themes associes a une ressource
+- JOIN avec table ressource_theme
+
+getEvaluations($id) : array
+- Recupere les evaluations avec nom utilisateur
+- Tri par date decroissante
+
+getNewest($limit) : array
+- Recupere les N dernieres ressources
+- Utilisee pour la page d'accueil
+
+getTopRated($limit, $minEvaluations) : array
+- Recupere les ressources les mieux notees
+- Calcule moyenne et nombre d'evaluations
+- Filtre par nombre minimum d'evaluations
+
+search($criteria) : array
+- Recherche multicritere dynamique
+- Construit la requete selon les criteres fournis
+- Criteres : search, type, genreId, themeId, anneeMin, anneeMax
+
+
+LIVRE (app/models/Livre.php)
+----------------------------
+Table : livre (+ ressource)
+Role : Gestion specifique des livres
+
+Methodes cles :
+
+create($data) : int
+- Cree un livre avec transaction
+- Etapes :
+  1. INSERT INTO ressource
+  2. INSERT INTO livre
+  3. INSERT INTO ressource_genre (boucle)
+  4. INSERT INTO ressource_theme (boucle)
+- Rollback si erreur
+
+update($id, $data) : bool
+- Met a jour un livre avec transaction
+- Supprime et recree les associations
+
+delete($id) : bool
+- Supprime via ressource (CASCADE automatique)
+
+isbnExists($isbn, $excludeId) : bool
+- Verifie l'unicite de l'ISBN
+- Exclut optionnellement un ID (pour modification)
+
+
+EVALUATION (app/models/Evaluation.php)
+--------------------------------------
+Table : evaluation
+Role : Gestion des notes et critiques
+
+Methodes cles :
+
+hasUserEvaluated($idUser, $idRessource) : bool
+- Verifie si l'utilisateur a deja evalue
+- Utilise COUNT(*) pour performance
+
+createEvaluation($idUser, $idRessource, $note, $critique) : bool
+- Cree une nouvelle evaluation
+- Gere la contrainte UNIQUE (erreur 23000)
+
+getAverage($idRessource) : float|null
+- Calcule la moyenne des notes
+- Retourne null si aucune evaluation
+
+getByRessource($idRessource) : array
+- Recupere les evaluations avec info utilisateur
+- Tri par date decroissante
+
+getLatest($limit) : array
+- Recupere les derniers avis avec info ressource
+- Utilisee pour la page d'accueil
+
+
+4.3.3 DESCRIPTION DES SERVICES TECHNIQUES
+-----------------------------------------
+
+SERVICE D'AUTHENTIFICATION (core/Auth.php)
+------------------------------------------
+Type : Classe statique (helper)
+Role : Centralise la gestion de l'authentification
+
+Fonctionnement :
+- Stockage des donnees utilisateur dans $_SESSION['user']
+- Verification du role via comparaison de chaines
+- Redirection automatique si non autorise
+
+Utilisation dans les controleurs :
+- Auth::requireAuth() en debut de methode protegee
+- Auth::requireStaff() pour les pages d'administration
+- Auth::requireRole('administrateur') pour fonctions admin
+
+SERVICE DE BASE DE DONNEES (core/Database.php)
+----------------------------------------------
+Type : Singleton
+Role : Gestion centralisee de la connexion PDO
+
+Pattern Singleton :
+- Instance unique stockee dans propriete statique
+- Constructeur prive (pas d'instanciation directe)
+- Methode getInstance() pour obtenir la connexion
+
+Configuration PDO :
+- PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+- PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+- PDO::ATTR_EMULATE_PREPARES => false
+- PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+
+Avantages :
+- Une seule connexion partagee (economies ressources)
+- Configuration centralisee
+- Facilite les transactions
+
+CONFIGURATION (config/config.php)
+---------------------------------
+Role : Configuration de la connexion base de donnees
+
+Detection d'environnement :
+- Local (developpement) : localhost:8889 (MAMP)
+- Production : linserv-info-01.unice.fr (IUT)
+
+Fonction getPDO() :
+- Cree et configure l'instance PDO
+- Applique les options de securite
+- Gere les erreurs de connexion
+
+
+4.4 SPECIFICATION DES METHODES PRINCIPALES
+--------------------------------------------------------------------------------
+
+4.4.1 DESCRIPTION DES METHODES CLES DES CONTROLEURS
+---------------------------------------------------
+
+HOMECONTROLLER::INDEX()
+-----------------------
+Objectif : Afficher la page d'accueil
+Acces : Public
+
+Algorithme :
+1. Instancier les modeles (Ressource, Theme, Evaluation)
+2. Recuperer les 8 dernieres ressources (getNewest)
+3. Recuperer les 8 mieux notees (getTopRated)
+4. Recuperer la liste des themes (getAll)
+5. Recuperer les 5 derniers avis (getLatest)
+6. Pour chaque ressource :
+   - Calculer la note moyenne
+   - Compter les evaluations
+   - Recuperer les genres
+7. Rendre la vue home/index avec les donnees
+
+Donnees passees a la vue :
+- $nouveautes : array de ressources
+- $topNotes : array de ressources avec note_moyenne
+- $themes : array de themes
+- $derniersAvis : array d'evaluations
+
+
+AUTHCONTROLLER::LOGINPOST()
+---------------------------
+Objectif : Traiter la connexion
+Acces : Public (POST)
+
+Algorithme :
+1. Recuperer email et password depuis $_POST
+2. Valider les champs (non vides)
+3. Si erreurs : reafficher formulaire avec messages
+4. Rechercher l'utilisateur par email (findByEmail)
+5. Si utilisateur non trouve : erreur generique
+6. Verifier le mot de passe (password_verify)
+7. Si mot de passe invalide : erreur generique
+8. Creer la session : $_SESSION['user'] = donnees utilisateur
+9. Rediriger vers la page d'accueil avec message succes
+
+Securite :
+- Message d'erreur identique si email ou mdp incorrect
+- Pas de fuite d'information sur l'existence du compte
+
+
+LIVRECONTROLLER::CREATEPOST()
+-----------------------------
+Objectif : Creer un nouveau livre
+Acces : Staff (bibliothecaire/admin)
+
+Algorithme :
+1. Verifier l'autorisation (Auth::requireStaff)
+2. Recuperer les donnees du formulaire
+3. Valider les donnees :
+   - Titre non vide
+   - Auteur non vide
+   - Annee entre 1800 et 2100
+   - ISBN 13 chiffres et unique
+   - Editeur non vide
+   - Nombre de pages > 0
+4. Si erreurs : reafficher formulaire avec erreurs
+5. Preparer les donnees :
+   - dataRessource : titre, auteur, annee, resume, image_url
+   - dataLivre : isbn, editeur, nombre_pages
+   - genreIds : array des genres selectionnes
+   - themeIds : array des themes selectionnes
+6. Appeler Livre::create() avec transaction
+7. Si succes : rediriger vers liste avec message
+8. Si echec : afficher erreur
+
+Gestion des erreurs :
+- Validation cote serveur obligatoire
+- Transaction rollback en cas d'erreur SQL
+
+
+EVALUATIONCONTROLLER::CREATEPOST()
+----------------------------------
+Objectif : Enregistrer une evaluation
+Acces : Utilisateur connecte
+
+Algorithme :
+1. Verifier l'authentification (Auth::requireAuth)
+2. Recuperer id_ressource et note depuis $_POST
+3. Recuperer critique (optionnel)
+4. Valider :
+   - id_ressource existe
+   - note entre 0 et 5
+   - critique max 1000 caracteres
+5. Verifier que l'utilisateur n'a pas deja evalue
+6. Si deja evalue : erreur
+7. Creer l'evaluation (createEvaluation)
+8. Rediriger vers la ressource avec message succes
+
+
+4.4.2 DESCRIPTION DES METHODES METIERS DES MODELES
+--------------------------------------------------
+
+RESSOURCE::SEARCH($criteria)
+----------------------------
+Objectif : Recherche multicritere dynamique
+Parametres : array $criteria avec cles optionnelles
+
+Algorithme :
+1. Initialiser la requete de base avec jointures
+2. Initialiser tableau de parametres vide
+3. Pour chaque critere non vide :
+   - search : Ajouter LIKE sur titre, auteur, resume
+   - type : Ajouter filtre sur type
+   - genreId : Ajouter EXISTS sur ressource_genre
+   - themeId : Ajouter EXISTS sur ressource_theme
+   - anneeMin : Ajouter borne inferieure
+   - anneeMax : Ajouter borne superieure
+4. Ajouter ORDER BY date_ajout DESC
+5. Preparer et executer la requete
+6. Retourner les resultats
+
+Code simplifie :
+$sql = "SELECT r.*, l.*, f.* FROM ressource r
+        LEFT JOIN livre l ON r.id_ressource = l.id_ressource
+        LEFT JOIN film f ON r.id_ressource = f.id_ressource
+        WHERE 1=1";
+
+if (!empty($criteria['search'])) {
+    $sql .= " AND (r.titre LIKE :search OR r.auteur LIKE :search)";
+    $params['search'] = '%' . $criteria['search'] . '%';
+}
+// ... autres criteres
+
+
+LIVRE::CREATE($data)
+--------------------
+Objectif : Creer un livre avec transaction
+Parametres : array $data avec ressource, livre, genres, themes
+
+Algorithme :
+1. Extraire les sous-tableaux de donnees
+2. Demarrer la transaction (beginTransaction)
+3. INSERT INTO ressource (type='livre', ...)
+4. Recuperer l'ID genere (lastInsertId)
+5. INSERT INTO livre avec l'ID ressource
+6. Pour chaque genre : INSERT INTO ressource_genre
+7. Pour chaque theme : INSERT INTO ressource_theme
+8. Valider la transaction (commit)
+9. Retourner l'ID de la ressource creee
+
+En cas d'erreur :
+- Annuler la transaction (rollback)
+- Logger l'erreur
+- Relancer l'exception
+
+
+EVALUATION::CREATEEVALUATION()
+------------------------------
+Objectif : Creer une evaluation avec gestion unicite
+Parametres : $idUser, $idRessource, $note, $critique
+
+Algorithme :
+1. Preparer la requete INSERT
+2. Executer avec les parametres
+3. Si erreur code 23000 (violation UNIQUE) :
+   - Logger la tentative
+   - Lever exception personnalisee
+4. Sinon : retourner true
+
+Gestion contrainte UNIQUE :
+try {
+    $stmt->execute([...]);
+} catch (PDOException $e) {
+    if ($e->getCode() == '23000') {
+        throw new PDOException("Vous avez deja evalue cette ressource.");
+    }
+    throw $e;
+}
+
+
+4.4.3 DESCRIPTION DES INTERACTIONS ENTRE COMPOSANTS
+---------------------------------------------------
+
+FLUX : AFFICHAGE PAGE D'ACCUEIL
+-------------------------------
+1. Navigateur envoie GET index.php
+2. index.php charge la configuration et les classes
+3. Router detecte controller=home, action=index (defaut)
+4. Router instancie HomeController
+5. Router appelle HomeController::index()
+6. HomeController instancie Ressource, Theme, Evaluation
+7. HomeController appelle Ressource::getNewest(8)
+8. Ressource::getNewest() utilise Database::getInstance()
+9. Database retourne la connexion PDO
+10. Ressource execute la requete preparee
+11. Ressource retourne les resultats au controleur
+12. HomeController appelle les autres methodes de modele
+13. HomeController appelle render('home/index', $data)
+14. Controller charge la vue home/index.php
+15. La vue genere le HTML avec les donnees
+16. Le layout.php enveloppe le contenu
+17. Le HTML est envoye au navigateur
+
+FLUX : CREATION D'UN LIVRE
+--------------------------
+1. Bibliothecaire soumet le formulaire (POST)
+2. Router detecte controller=livre, action=createPost
+3. Router instancie LivreController
+4. Router appelle LivreController::createPost()
+5. LivreController appelle Auth::requireStaff()
+6. Auth verifie $_SESSION['user']['role']
+7. Si non autorise : redirection login
+8. Si autorise : LivreController valide les donnees
+9. LivreController instancie Livre, Genre, Theme
+10. LivreController appelle Livre::create($data)
+11. Livre demarre une transaction PDO
+12. Livre execute les INSERT sequentiellement
+13. Livre valide la transaction (commit)
+14. Livre retourne l'ID de la ressource
+15. LivreController stocke un message flash
+16. LivreController redirige vers la liste
+
+
+4.4.4 GESTION DES ENTREES/SORTIES ET VALIDATIONS
+------------------------------------------------
+
+VALIDATION DES DONNEES UTILISATEUR
+----------------------------------
+
+Principe : Toute donnee provenant de l'utilisateur doit etre validee
+cote serveur avant traitement.
+
+Validations communes :
+- Champs obligatoires non vides
+- Longueurs maximales respectees
+- Formats specifiques (email, ISBN)
+- Plages de valeurs (annee, note)
+
+Exemple de validation (AuthController::registerPost) :
+$errors = [];
+
+if (empty($_POST['nom'])) {
+    $errors[] = "Le nom est obligatoire";
+}
+if (empty($_POST['email']) ||
+    !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+    $errors[] = "Email invalide";
+}
+if (strlen($_POST['mot_de_passe']) < 8) {
+    $errors[] = "Le mot de passe doit contenir au moins 8 caracteres";
+}
+if ($_POST['mot_de_passe'] !== $_POST['confirmation']) {
+    $errors[] = "Les mots de passe ne correspondent pas";
+}
+
+if (!empty($errors)) {
+    // Reafficher formulaire avec erreurs
+    $this->render('auth/register', ['errors' => $errors, 'old' => $_POST]);
+    return;
+}
+
+ECHAPPEMENT DES SORTIES
+-----------------------
+
+Principe : Toute donnee affichee dans le HTML doit etre echappee
+pour prevenir les attaques XSS.
+
+Fonction utilisee : htmlspecialchars($data, ENT_QUOTES, 'UTF-8')
+
+Exemples dans les vues :
+<!-- Affichage de texte -->
+<?= htmlspecialchars($ressource['titre'], ENT_QUOTES, 'UTF-8') ?>
+
+<!-- Attributs HTML -->
+<input value="<?= htmlspecialchars($old['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+
+<!-- URLs -->
+<a href="?controller=ressource&action=show&id=<?= (int)$ressource['id_ressource'] ?>">
+
+GESTION DES ERREURS
+-------------------
+
+Strategie :
+- Exceptions PDO en mode ERRMODE_EXCEPTION
+- Try/catch pour les operations critiques
+- Messages d'erreur generiques pour l'utilisateur
+- Logs detailles pour le developpeur
+
+Exemple (Livre::create) :
+try {
+    $this->pdo->beginTransaction();
+    // Operations SQL...
+    $this->pdo->commit();
+    return $idRessource;
+} catch (PDOException $e) {
+    $this->pdo->rollBack();
+    error_log("Erreur creation livre: " . $e->getMessage());
+    throw $e;
+}
+
+
+================================================================================
+                    5. CONCEPTION DE LA BASE DE DONNEES
+================================================================================
+
+5.1 MODELE CONCEPTUEL DE DONNEES (MCD)
+--------------------------------------------------------------------------------
+
+Fichier source : documentation/diagrammes/08-mcd.puml
+
+DESCRIPTION DU MCD :
+
+Le Modele Conceptuel de Donnees represente la structure logique des donnees
+du systeme E-Library de maniere abstraite, independamment de l'implementation.
+
+ENTITES PRINCIPALES :
+
+UTILISATEUR
+-----------
+- Represente les comptes utilisateurs du systeme
+- Attributs :
+  * id_utilisateur (identifiant unique)
+  * nom
+  * prenom
+  * email (unique)
+  * mot_de_passe (hash bcrypt)
+  * role (utilisateur, bibliothecaire, administrateur)
+  * date_inscription
+
+RESSOURCE
+---------
+- Entite parente representant une ressource culturelle
+- Attributs communs :
+  * id_ressource (identifiant unique)
+  * type (livre ou film)
+  * titre
+  * auteur_realisateur
+  * annee
+  * resume
+  * image_url
+  * pays
+  * date_ajout
+
+LIVRE (specialisation de Ressource)
+-----------------------------------
+- Represente les attributs specifiques aux livres
+- Attributs :
+  * id_ressource (reference vers Ressource)
+  * isbn (unique, 13 caracteres)
+  * editeur
+  * nombre_pages
+  * prix
+  * langue
+
+FILM (specialisation de Ressource)
+----------------------------------
+- Represente les attributs specifiques aux films
+- Attributs :
+  * id_ressource (reference vers Ressource)
+  * duree (minutes)
+  * support (DVD, Blu-ray, Streaming)
+  * langue
+  * sous_titres
+  * propose_par
+  * casting
+
+GENRE
+-----
+- Represente les categories stylistiques
+- Attributs :
+  * id_genre (identifiant unique)
+  * nom (unique)
+
+THEME
+-----
+- Represente les themes/idees abordes
+- Attributs :
+  * id_theme (identifiant unique)
+  * nom (unique)
+
+EVALUATION
+----------
+- Represente les notes et critiques utilisateurs
+- Attributs :
+  * id_evaluation (identifiant unique)
+  * id_utilisateur (reference)
+  * id_ressource (reference)
+  * note (0.0 a 5.0)
+  * critique (optionnel)
+  * date_evaluation
+
+ASSOCIATIONS :
+
+UTILISATEUR -- EVALUATION (1,n)
+- Un utilisateur peut creer plusieurs evaluations
+- Une evaluation appartient a un seul utilisateur
+
+RESSOURCE -- EVALUATION (1,n)
+- Une ressource peut recevoir plusieurs evaluations
+- Une evaluation concerne une seule ressource
+- Contrainte : (id_utilisateur, id_ressource) unique
+
+RESSOURCE -- LIVRE (1,0..1)
+- Heritage : une ressource de type 'livre' a un enregistrement dans Livre
+- Relation exclusive avec Film
+
+RESSOURCE -- FILM (1,0..1)
+- Heritage : une ressource de type 'film' a un enregistrement dans Film
+- Relation exclusive avec Livre
+
+RESSOURCE -- GENRE (n,m)
+- Une ressource peut avoir plusieurs genres
+- Un genre peut etre associe a plusieurs ressources
+- Table de liaison : ressource_genre
+
+RESSOURCE -- THEME (n,m)
+- Une ressource peut avoir plusieurs themes
+- Un theme peut etre associe a plusieurs ressources
+- Table de liaison : ressource_theme
+
+
+5.2 MODELE LOGIQUE DE DONNEES (MLD)
+--------------------------------------------------------------------------------
+
+Fichier source : documentation/diagrammes/09-mld.puml
+
+DESCRIPTION DU MLD :
+
+Le Modele Logique de Donnees represente la structure des tables de la base
+de donnees avec les types de donnees, cles et contraintes.
+
+TRANSFORMATION MCD -> MLD :
+
+1. Chaque entite devient une table
+2. Les identifiants deviennent des cles primaires
+3. Les associations 1,n deviennent des cles etrangeres
+4. Les associations n,m deviennent des tables de liaison
+5. L'heritage Ressource -> Livre/Film utilise le pattern Table Inheritance
+
+TABLES DU MLD :
+
+TABLE : utilisateur
+-------------------
++------------------+------------------------------------------+-------------+
+| Colonne          | Type                                     | Contraintes |
++------------------+------------------------------------------+-------------+
+| id_utilisateur   | INT                                      | PK, AUTO    |
+| nom              | VARCHAR(100)                             | NOT NULL    |
+| prenom           | VARCHAR(100)                             | NOT NULL    |
+| email            | VARCHAR(255)                             | NOT NULL, UQ|
+| mot_de_passe     | VARCHAR(255)                             | NOT NULL    |
+| role             | ENUM('utilisateur','bibliothecaire',     | NOT NULL    |
+|                  |      'administrateur')                   | DEFAULT 'u' |
+| date_inscription | DATETIME                                 | DEFAULT NOW |
++------------------+------------------------------------------+-------------+
+Index : idx_email, idx_role
+
+TABLE : ressource
+-----------------
++--------------------+----------------------+-------------+
+| Colonne            | Type                 | Contraintes |
++--------------------+----------------------+-------------+
+| id_ressource       | INT                  | PK, AUTO    |
+| type               | ENUM('livre','film') | NOT NULL    |
+| titre              | VARCHAR(255)         | NOT NULL    |
+| auteur_realisateur | VARCHAR(255)         | NOT NULL    |
+| annee              | SMALLINT             | NOT NULL    |
+| resume             | TEXT                 |             |
+| image_url          | VARCHAR(255)         |             |
+| pays               | VARCHAR(100)         |             |
+| date_ajout         | DATETIME             | DEFAULT NOW |
++--------------------+----------------------+-------------+
+Index : idx_type, idx_titre, idx_auteur, idx_date_ajout
+
+TABLE : livre
+-------------
++---------------+---------------+-----------------------------+
+| Colonne       | Type          | Contraintes                 |
++---------------+---------------+-----------------------------+
+| id_ressource  | INT           | PK, FK -> ressource         |
+| isbn          | VARCHAR(13)   | NOT NULL, UNIQUE            |
+| editeur       | VARCHAR(255)  | NOT NULL                    |
+| nombre_pages  | INT           | NOT NULL                    |
+| prix          | DECIMAL(10,2) |                             |
+| langue        | VARCHAR(50)   | NOT NULL, DEFAULT 'Francais'|
++---------------+---------------+-----------------------------+
+Index : idx_isbn
+Contrainte FK : ON DELETE CASCADE
+
+TABLE : film
+------------
++---------------+-----------------------------------------+-------------------+
+| Colonne       | Type                                    | Contraintes       |
++---------------+-----------------------------------------+-------------------+
+| id_ressource  | INT                                     | PK, FK -> ressource|
+| duree         | INT                                     | NOT NULL          |
+| support       | ENUM('DVD','Blu-ray','Streaming')       | NOT NULL          |
+| langue        | VARCHAR(50)                             | NOT NULL          |
+| sous_titres   | VARCHAR(255)                            |                   |
+| propose_par   | ENUM('Arte','UniversCine','CNC',        |                   |
+|               |      'Mediatheque numerique')           |                   |
+| casting       | TEXT                                    |                   |
++---------------+-----------------------------------------+-------------------+
+Contrainte FK : ON DELETE CASCADE
+
+TABLE : genre
+-------------
++----------+--------------+-------------+
+| Colonne  | Type         | Contraintes |
++----------+--------------+-------------+
+| id_genre | INT          | PK, AUTO    |
+| nom      | VARCHAR(100) | NOT NULL, UQ|
++----------+--------------+-------------+
+
+TABLE : theme
+-------------
++----------+--------------+-------------+
+| Colonne  | Type         | Contraintes |
++----------+--------------+-------------+
+| id_theme | INT          | PK, AUTO    |
+| nom      | VARCHAR(100) | NOT NULL, UQ|
++----------+--------------+-------------+
+
+TABLE : ressource_genre (Table de liaison)
+------------------------------------------
++--------------+------+-----------------------------+
+| Colonne      | Type | Contraintes                 |
++--------------+------+-----------------------------+
+| id_ressource | INT  | PK, FK -> ressource         |
+| id_genre     | INT  | PK, FK -> genre             |
++--------------+------+-----------------------------+
+Contraintes FK : ON DELETE CASCADE
+
+TABLE : ressource_theme (Table de liaison)
+------------------------------------------
++--------------+------+-----------------------------+
+| Colonne      | Type | Contraintes                 |
++--------------+------+-----------------------------+
+| id_ressource | INT  | PK, FK -> ressource         |
+| id_theme     | INT  | PK, FK -> theme             |
++--------------+------+-----------------------------+
+Contraintes FK : ON DELETE CASCADE
+
+TABLE : evaluation
+------------------
++----------------+---------------+-----------------------------+
+| Colonne        | Type          | Contraintes                 |
++----------------+---------------+-----------------------------+
+| id_evaluation  | INT           | PK, AUTO                    |
+| id_utilisateur | INT           | NOT NULL, FK -> utilisateur |
+| id_ressource   | INT           | NOT NULL, FK -> ressource   |
+| note           | DECIMAL(2,1)  | NOT NULL                    |
+| critique       | TEXT          |                             |
+| date_evaluation| DATETIME      | DEFAULT NOW                 |
++----------------+---------------+-----------------------------+
+Contrainte UNIQUE : (id_utilisateur, id_ressource)
+Index : idx_ressource, idx_utilisateur, idx_note
+Contraintes FK : ON DELETE CASCADE
+
+
+5.3 SCRIPT SQL
+--------------------------------------------------------------------------------
+
+Fichier source : sql/schema.sql
+
+Le script SQL complet permet de creer entierement la base de donnees.
+Il est concu pour etre execute sur MySQL 5.7+ via PHPMyAdmin ou en ligne
+de commande.
+
+PRESENTATION DU SCRIPT :
+
+-- ============================================
+-- SAE R307 - Mediatheque
+-- SCRIPT FINAL COMPATIBLE PHPMyAdmin / IUT
+-- ============================================
+
+SUPPRESSION DES TABLES EXISTANTES (ordre inverse des dependances) :
+- evaluation
+- ressource_genre
+- ressource_theme
+- film
+- livre
+- ressource
+- genre
+- theme
+- utilisateur
+
+CREATION DES TABLES (ordre des dependances) :
+
+1. utilisateur
+   - Cle primaire AUTO_INCREMENT
+   - Email UNIQUE
+   - Role ENUM avec defaut
+   - Index sur email et role
+
+2. ressource
+   - Cle primaire AUTO_INCREMENT
+   - Type ENUM (livre/film)
+   - Index sur type, titre, auteur, date_ajout
+
+3. livre
+   - Cle primaire = Cle etrangere vers ressource
+   - ISBN UNIQUE
+   - FK avec ON DELETE CASCADE
+
+4. film
+   - Cle primaire = Cle etrangere vers ressource
+   - Support ENUM
+   - FK avec ON DELETE CASCADE
+
+5. theme
+   - Cle primaire AUTO_INCREMENT
+   - Nom UNIQUE
+
+6. genre
+   - Cle primaire AUTO_INCREMENT
+   - Nom UNIQUE
+
+7. ressource_theme
+   - Cle primaire composite (id_ressource, id_theme)
+   - FK avec ON DELETE CASCADE
+
+8. ressource_genre
+   - Cle primaire composite (id_ressource, id_genre)
+   - FK avec ON DELETE CASCADE
+
+9. evaluation
+   - Cle primaire AUTO_INCREMENT
+   - Contrainte UNIQUE (id_utilisateur, id_ressource)
+   - FK avec ON DELETE CASCADE
+   - Index sur ressource, utilisateur, note
+
+OPTIONS GLOBALES :
+- ENGINE=InnoDB (transactions, FK)
+- CHARSET=utf8mb4 (support emoji, caracteres speciaux)
+- COLLATE=utf8mb4_unicode_ci
+
+JUSTIFICATION DES CHOIX TECHNIQUES :
+
+1. Pattern Table Inheritance pour Ressource/Livre/Film
+   - Permet de partager les attributs communs
+   - Facilite les requetes avec LEFT JOIN
+   - Maintient l'integrite referentielle
+
+2. ENUM pour les valeurs predefinies (type, role, support)
+   - Validation au niveau base de donnees
+   - Economie d'espace stockage
+   - Clarification des valeurs possibles
+
+3. CASCADE sur toutes les FK
+   - Suppression automatique des donnees orphelines
+   - Simplifie la logique applicative
+   - Garantit la coherence
+
+4. INDEX sur colonnes frequemment requetees
+   - email pour authentification
+   - type, titre pour recherche
+   - date_ajout pour tri
+   - note pour calculs moyennes
+
+5. Contrainte UNIQUE sur (id_utilisateur, id_ressource) dans evaluation
+   - Garantit une seule evaluation par utilisateur par ressource
+   - Gere au niveau base de donnees (robuste)
+
+INSTRUCTIONS POUR RECREER LA BASE :
+
+1. Connexion a MySQL :
+   mysql -u utilisateur -p
+
+2. Creation de la base (si necessaire) :
+   CREATE DATABASE mediatheque CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   USE mediatheque;
+
+3. Execution du script de structure :
+   SOURCE sql/schema.sql;
+
+4. Chargement des donnees de test :
+   SOURCE sql/data.sql;
+
+5. Verification :
+   SHOW TABLES;
+   SELECT COUNT(*) FROM ressource;
+
+
+================================================================================
+                    6. SECURITE ET CONTRAINTES TECHNIQUES
+================================================================================
+
+6.1 GESTION DES ROLES ET DES DROITS
+--------------------------------------------------------------------------------
+
+Le systeme implemente un controle d'acces base sur les roles (RBAC - Role Based
+Access Control) avec trois niveaux de permissions.
+
+IMPLEMENTATION DANS LE CODE :
+
+Classe Auth (core/Auth.php) :
+- Centralise toutes les verifications d'autorisation
+- Methodes statiques pour faciliter l'utilisation
+- Stockage des donnees utilisateur en session
+
+Verification dans les controleurs :
+// Acces reserve aux utilisateurs connectes
+Auth::requireAuth();
+
+// Acces reserve au staff (bibliothecaire ou admin)
+Auth::requireStaff();
+
+// Acces reserve a un role specifique
+Auth::requireRole('administrateur');
+
+Verification dans les vues :
+<?php if (Auth::isStaff()): ?>
+    <a href="?controller=admin">Administration</a>
+<?php endif; ?>
+
+<?php if (Auth::hasRole('administrateur')): ?>
+    <button onclick="deleteEvaluation(<?= $eval['id'] ?>)">Supprimer</button>
+<?php endif; ?>
+
+
+6.2 SECURISATION DES ACCES
+--------------------------------------------------------------------------------
+
+PROTECTION CONTRE LES ACCES NON AUTORISES :
+
+1. Verification systematique dans chaque controleur protege
+2. Redirection vers la page de connexion si non autorise
+3. Message d'erreur stocke en session
+4. Pas d'exposition d'informations sensibles
+
+Exemple (LivreController) :
+public function create() {
+    Auth::requireStaff(); // Redirige si non autorise
+
+    // Code accessible uniquement au staff
+}
+
+
+6.3 PROTECTION CONTRE LES INJECTIONS SQL
+--------------------------------------------------------------------------------
+
+METHODE : REQUETES PREPAREES PDO
+
+100% des requetes SQL du projet utilisent des requetes preparees avec
+parametres lies, ce qui empeche les injections SQL.
+
+EXEMPLE CORRECT (securise) :
+$sql = "SELECT * FROM utilisateur WHERE email = :email";
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['email' => $email]);
+$user = $stmt->fetch();
+
+EXEMPLE INCORRECT (vulnerable) - NON UTILISE DANS LE PROJET :
+$sql = "SELECT * FROM utilisateur WHERE email = '$email'";
+$result = $pdo->query($sql);
+
+TYPES DE LIAISON UTILISES :
+
+1. Parametres nommes (:param)
+   $stmt->execute(['email' => $email, 'role' => $role]);
+
+2. Parametres positionnels (?)
+   $stmt->execute([$email, $role]);
+
+3. bindValue avec type explicite
+   $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+CONFIGURATION PDO :
+PDO::ATTR_EMULATE_PREPARES => false
+(Force l'utilisation de vraies requetes preparees cote serveur MySQL)
+
+
+6.4 GESTION DES SESSIONS
+--------------------------------------------------------------------------------
+
+CONFIGURATION PHP RECOMMANDEE (php.ini ou runtime) :
+- session.use_strict_mode = 1
+- session.use_only_cookies = 1
+- session.cookie_httponly = 1
+- session.cookie_secure = 1 (en HTTPS)
+
+DONNEES STOCKEES EN SESSION :
+$_SESSION['user'] = [
+    'id_utilisateur' => 1,
+    'nom' => 'Admin',
+    'prenom' => 'System',
+    'email' => 'admin@mediatheque.com',
+    'role' => 'administrateur'
+];
+
+GESTION DE LA DECONNEXION :
+session_destroy();
+$_SESSION = []; // Vide le tableau
+// Regeneration de l'ID de session pour eviter le session fixation
+
+
+6.5 VALIDATION DES DONNEES
+--------------------------------------------------------------------------------
+
+PRINCIPE : Toute donnee provenant de l'utilisateur est potentiellement
+dangereuse et doit etre validee avant utilisation.
+
+VALIDATIONS IMPLEMENTEES :
+
+Donnees textuelles :
+- Verification non vide pour champs obligatoires
+- Longueur maximale (trim + strlen)
+- Format specifique (email avec filter_var)
+
+Donnees numeriques :
+- Conversion en entier (int) ou flottant (float)
+- Plage de valeurs (min/max)
+
+Listes de valeurs :
+- Verification d'appartenance (in_array)
+- Validation des ENUM cote application
+
+ECHAPPEMENT DES SORTIES (Protection XSS) :
+Fonction : htmlspecialchars($data, ENT_QUOTES, 'UTF-8')
+
+Usage systematique dans les vues :
+<?= htmlspecialchars($ressource['titre'], ENT_QUOTES, 'UTF-8') ?>
+
+RESUME DES PROTECTIONS :
+
++----------------------+----------------------------------+----------------+
+| Menace               | Protection                       | Implementation |
++----------------------+----------------------------------+----------------+
+| SQL Injection        | Requetes preparees PDO           | 100% requetes  |
+| XSS                  | htmlspecialchars()               | Toutes vues    |
+| Mots de passe        | bcrypt (password_hash)           | Inscription    |
+| Acces non autorise   | Controle de role                 | Auth::require* |
+| Session hijacking    | Configuration PHP securisee      | php.ini        |
+| CSRF                 | Methode POST + verification      | Formulaires    |
++----------------------+----------------------------------+----------------+
+
+
+================================================================================
+                              7. CONCLUSION
+================================================================================
+
+7.1 BILAN DU SYSTEME DEVELOPPE
+--------------------------------------------------------------------------------
+
+Le projet E-Library constitue une application web complete de gestion de
+mediatheque numerique, developpee selon les standards professionnels et les
+exigences pedagogiques de la SAE R307.
+
+REALISATIONS TECHNIQUES :
+
+Architecture :
+- Pattern MVC strictement respecte
+- Framework PHP maison modulaire et reutilisable
+- Separation claire des responsabilites (Model/View/Controller)
+- Code organise et documente
+
+Base de donnees :
+- 9 tables relationnelles normalisees
+- Contraintes d'integrite referentielle (FK, CASCADE)
+- Index pour optimisation des performances
+- Pattern Table Inheritance pour la hierarchie Ressource/Livre/Film
+
+Securite :
+- 100% des requetes SQL en prepared statements
+- Hachage bcrypt des mots de passe
+- Echappement XSS systematique
+- Controle d'acces base sur les roles
+
+Fonctionnalites :
+- Catalogue complet avec recherche multicritere
+- Systeme d'evaluation avec notes et critiques
+- Interface d'administration complete
+- Gestion des utilisateurs avec 3 niveaux de roles
+
+Interface utilisateur :
+- Design responsive (mobile/desktop)
+- Mode clair/sombre
+- Navigation intuitive
+
+
+7.2 CONFORMITE AUX EXIGENCES DE LA SAE R307
+--------------------------------------------------------------------------------
+
+CRITERES TECHNIQUES :
+[X] Architecture MVC respectee
+[X] Code PHP oriente objet
+[X] Base de donnees MySQL avec PDO
+[X] Requetes preparees (protection SQL Injection)
+[X] Mots de passe haches (bcrypt)
+[X] Echappement HTML (protection XSS)
+
+LIVRABLES DOCUMENTES :
+[X] Diagramme de composants (Component Diagram)
+[X] Diagramme de cas d'utilisation (Use Case Diagram)
+[X] Diagrammes de sequence (3 scenarios)
+[X] Diagramme de packages (Package Diagram)
+[X] Diagramme de classes (Class Diagram)
+[X] Modele Conceptuel de Donnees (MCD)
+[X] Modele Logique de Donnees (MLD)
+[X] Script SQL complet
+
+FONCTIONNALITES IMPLEMENTEES :
+[X] Gestion des utilisateurs (inscription, connexion, roles)
+[X] Catalogue avec recherche multicritere
+[X] Affichage des nouveautes et top notes
+[X] Detail des ressources (livres et films)
+[X] Systeme d'evaluation (note + critique)
+[X] Administration des ressources (CRUD livres/films)
+[X] Gestion des referentiels (genres/themes)
+
+
+7.3 OUVERTURE POSSIBLE (AMELIORATIONS FUTURES)
+--------------------------------------------------------------------------------
+
+EVOLUTIONS FONCTIONNELLES ENVISAGEABLES :
+
+1. Systeme de favoris
+   - Permettre aux utilisateurs de sauvegarder des ressources
+   - Liste de souhaits personnalisee
+   - Notifications sur les nouveautes des favoris
+
+2. Systeme de recommandations
+   - Suggestions basees sur les evaluations
+   - "Les utilisateurs qui ont aime X ont aussi aime Y"
+   - Recommandations par genre/theme
+
+3. Gestion des emprunts
+   - Reservation de ressources physiques
+   - Suivi des emprunts et retours
+   - Historique des emprunts
+
+4. Profil utilisateur enrichi
+   - Avatar et biographie
+   - Historique des evaluations
+   - Statistiques personnelles
+
+5. Nouveaux types de ressources
+   - Bandes dessinees
+   - Musique
+   - Podcasts
+
+EVOLUTIONS TECHNIQUES ENVISAGEABLES :
+
+1. Performance
+   - Mise en cache (Redis/Memcached)
+   - Pagination des listes
+   - Lazy loading des images
+   - CDN pour les ressources statiques
+
+2. Securite
+   - Authentification a deux facteurs
+   - Captcha sur les formulaires
+   - Rate limiting
+
+3. API REST
+   - Exposition des donnees via API
+   - Documentation Swagger/OpenAPI
+   - Application mobile consommatrice
+
+4. Tests automatises
+   - Tests unitaires (PHPUnit)
+   - Tests fonctionnels
+   - Integration continue (CI/CD)
+
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================
+
+Document : Specifications Techniques E-Library
+Version : 1.0
+Date : Janvier 2025
+Projet : SAE R307 - Mediatheque Numerique
+Etablissement : IUT Nice Cote d'Azur
+Enseignant : M. NGUYEN Thanh Phuong
+
+================================================================================

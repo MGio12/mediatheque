@@ -1,0 +1,358 @@
+@startuml Diagramme MVC Complet - Médiathèque
+
+allowmixing
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+
+left to right direction
+
+title Architecture MVC Complète - E-Library Médiathèque
+
+' ============ COUCHE CORE (Framework) ============
+package "Core Framework" <<Rectangle>> #LightBlue {
+
+  abstract class Controller {
+    # render(view: string, data: array, title: string): void
+    # renderWithoutLayout(view: string, data: array): void
+  }
+
+  abstract class Model {
+    # pdo: PDO
+    # table: string
+    + __construct()
+    + findAll(): array
+    + findById(id: int): array
+    + create(data: array): int
+    + update(id: int, data: array): bool
+    + delete(id: int): bool
+  }
+
+  class Router {
+    + dispatch(controller: string, action: string): void
+    - error404(): void
+  }
+
+  class Auth <<static>> {
+    {static} + check(): bool
+    {static} + user(): array
+    {static} + hasRole(role: string): bool
+    {static} + requireRole(role: string): void
+    {static} + requireAuth(): void
+    {static} + isStaff(): bool
+    {static} + requireStaff(): void
+  }
+
+  class Database <<Singleton>> {
+    {static} - instance: PDO
+    {static} + getInstance(): PDO
+    {static} + getPDO(): PDO
+    - __construct()
+    - __clone()
+  }
+}
+
+' ============ COUCHE APPLICATION - CONTROLLERS ============
+package "Controllers" <<Rectangle>> #LightGreen {
+
+  class HomeController {
+    - ressourceModel: Ressource
+    - themeModel: Theme
+    - evaluationModel: Evaluation
+    + index(): void
+  }
+
+  class CatalogueController {
+    - ressourceModel: Ressource
+    + index(): void
+    + nouveautes(): void
+    + top(): void
+    + selection(): void
+    + search(): void
+  }
+
+  class RessourceController {
+    - ressourceModel: Ressource
+    + show(): void
+    + evaluate(): void
+  }
+
+  class AuthController {
+    - userModel: Utilisateur
+    + login(): void
+    + loginPost(): void
+    + register(): void
+    + registerPost(): void
+    + logout(): void
+  }
+
+  class AdminController {
+    + index(): void
+    + deleteEvaluation(): void
+  }
+
+  class LivreController {
+    - livreModel: Livre
+    - genreModel: Genre
+    - themeModel: Theme
+    + index(): void
+    + create(): void
+    + createPost(): void
+    + edit(): void
+    + editPost(): void
+    + delete(): void
+  }
+
+  class FilmController {
+    - filmModel: Film
+    - genreModel: Genre
+    - themeModel: Theme
+    + index(): void
+    + create(): void
+    + createPost(): void
+    + edit(): void
+    + editPost(): void
+    + delete(): void
+  }
+
+  class GenreController {
+    - genreModel: Genre
+    + index(): void
+    + create(): void
+    + edit(): void
+    + delete(): void
+  }
+
+  class ThemeController {
+    - themeModel: Theme
+    + index(): void
+    + create(): void
+    + edit(): void
+    + delete(): void
+  }
+
+  class EvaluationController {
+    - evaluationModel: Evaluation
+    - ressourceModel: Ressource
+    + create(): void
+  }
+}
+
+' ============ COUCHE APPLICATION - MODELS ============
+package "Models" <<Rectangle>> #LightYellow {
+
+  class Ressource {
+    + getAll(): array
+    + findById(id: int): array
+    + getAverageRating(id: int): float
+    + getEvaluationCount(id: int): int
+    + getGenres(id: int): array
+    + getThemes(id: int): array
+    + getEvaluations(id: int): array
+    + getNewest(limit: int): array
+    + getTopRated(limit: int, minEvaluations: int): array
+    + getByTheme(idTheme: int): array
+    + search(criteria: array): array
+    {static} + buildImagePath(ressource: array): string
+  }
+
+  class Livre {
+    # table: string = 'livre'
+    + getAllWithDetails(): array
+    + findByIdWithDetails(id: int): array
+    + isbnExists(isbn: string, excludeId: int): bool
+    + getGenreIds(id: int): array
+    + getThemeIds(id: int): array
+    + create(data: array): int
+    + update(id: int, data: array): bool
+    + delete(id: int): bool
+  }
+
+  class Film {
+    # table: string = 'film'
+    + getAllWithDetails(): array
+    + findByIdWithDetails(id: int): array
+    + getGenreIds(id: int): array
+    + getThemeIds(id: int): array
+    + create(data: array): int
+    + update(id: int, data: array): bool
+    + delete(id: int): bool
+  }
+
+  class Utilisateur {
+    # table: string = 'utilisateur'
+    + findByEmail(email: string): array
+    + createUser(data: array): array
+    + verifyCredentials(email: string, password: string): array
+  }
+
+  class Evaluation {
+    # table: string = 'evaluation'
+    + hasUserEvaluated(idUser: int, idRessource: int): bool
+    + createEvaluation(idUser: int, idRessource: int, note: float, critique: string): bool
+    + getAverage(idRessource: int): float
+    + countForRessource(idRessource: int): int
+    + getByRessource(idRessource: int): array
+    + deleteEvaluation(id: int): bool
+    + getLatest(limit: int): array
+  }
+
+  class Genre {
+    # table: string = 'genre'
+    + getAll(): array
+    + findById(id: int): array
+    + create(data: array): int
+    + update(id: int, data: array): bool
+    + delete(id: int): bool
+  }
+
+  class Theme {
+    # table: string = 'theme'
+    + getAll(): array
+    + findById(id: int): array
+    + create(data: array): int
+    + update(id: int, data: array): bool
+    + delete(id: int): bool
+  }
+}
+
+' ============ COUCHE VUE ============
+package "Views" <<Rectangle>> #LightCoral {
+
+  together {
+    component "layout.php" as layout
+    component "header.php" as header
+    component "footer.php" as footer
+  }
+
+  together {
+    component "home/index.php" as home_index
+    component "catalogue/*.php" as catalogue_views
+    component "ressource/show.php" as ressource_show
+  }
+
+  together {
+    component "auth/login.php" as auth_login
+    component "auth/register.php" as auth_register
+  }
+
+  together {
+    component "admin/index.php" as admin_index
+    component "admin/livre/*.php" as admin_livre_views
+    component "admin/film/*.php" as admin_film_views
+    component "admin/genre/*.php" as admin_genre_views
+    component "admin/theme/*.php" as admin_theme_views
+  }
+}
+
+' ============ RELATIONS CORE ============
+Model ..> Database : utilise
+Router ..> Controller : dispatche
+Controller ..> Auth : utilise
+
+' ============ HERITAGE CONTROLLERS ============
+Controller <|-- HomeController
+Controller <|-- CatalogueController
+Controller <|-- RessourceController
+Controller <|-- AuthController
+Controller <|-- AdminController
+Controller <|-- LivreController
+Controller <|-- FilmController
+Controller <|-- GenreController
+Controller <|-- ThemeController
+Controller <|-- EvaluationController
+
+' ============ HERITAGE MODELS ============
+Model <|-- Ressource
+Model <|-- Livre
+Model <|-- Film
+Model <|-- Utilisateur
+Model <|-- Evaluation
+Model <|-- Genre
+Model <|-- Theme
+
+' ============ RELATIONS CONTROLLERS -> MODELS ============
+HomeController --> Ressource : utilise
+HomeController --> Theme : utilise
+HomeController --> Evaluation : utilise
+
+CatalogueController --> Ressource : utilise
+CatalogueController --> Genre : utilise
+CatalogueController --> Theme : utilise
+
+RessourceController --> Ressource : utilise
+RessourceController --> Evaluation : utilise
+
+AuthController --> Utilisateur : utilise
+
+AdminController --> Evaluation : utilise
+
+LivreController --> Livre : utilise
+LivreController --> Genre : utilise
+LivreController --> Theme : utilise
+
+FilmController --> Film : utilise
+FilmController --> Genre : utilise
+FilmController --> Theme : utilise
+
+GenreController --> Genre : utilise
+ThemeController --> Theme : utilise
+
+EvaluationController --> Evaluation : utilise
+EvaluationController --> Ressource : utilise
+
+' ============ RELATIONS CONTROLLERS -> VIEWS ============
+HomeController ..> home_index : rend
+CatalogueController ..> catalogue_views : rend
+RessourceController ..> ressource_show : rend
+AuthController ..> auth_login : rend
+AuthController ..> auth_register : rend
+AdminController ..> admin_index : rend
+LivreController ..> admin_livre_views : rend
+FilmController ..> admin_film_views : rend
+GenreController ..> admin_genre_views : rend
+ThemeController ..> admin_theme_views : rend
+
+' ============ RELATIONS VIEWS -> LAYOUT ============
+home_index ..> layout : utilise
+catalogue_views ..> layout : utilise
+ressource_show ..> layout : utilise
+auth_login ..> layout : utilise
+auth_register ..> layout : utilise
+admin_index ..> layout : utilise
+admin_livre_views ..> layout : utilise
+admin_film_views ..> layout : utilise
+admin_genre_views ..> layout : utilise
+admin_theme_views ..> layout : utilise
+
+layout ..> header : inclut
+layout ..> footer : inclut
+
+' ============ NOTES ============
+note top of "Core Framework"
+  **Framework MVC Réutilisable**
+  Pattern Singleton pour Database
+  Gestion Auth centralisée
+end note
+
+note top of Controllers
+  **Contrôleurs Métier**
+  Front Office : Home, Catalogue, Ressource, Auth
+  Back Office : Admin, Livre, Film, Genre, Theme
+end note
+
+note top of Models
+  **Modèles Métier**
+  Héritage de Model abstrait
+  Accès données via PDO
+end note
+
+note top of Views
+  **Templates PHP**
+  Layout commun avec header/footer
+  Vues spécifiques par contrôleur
+end note
+
+@enduml
